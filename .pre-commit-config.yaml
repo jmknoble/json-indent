@@ -7,7 +7,7 @@ default_language_version:
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.4.0
+    rev: v2.5.0
     hooks:
       - id: check-added-large-files
 
@@ -20,18 +20,18 @@ repos:
         exclude: 'cfn\.ya?ml$'
 
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.19.0
+    rev: v1.20.0
     hooks:
       - id: yamllint
 
   - repo: https://github.com/awslabs/cfn-python-lint
-    rev: v0.26.0
+    rev: v0.27.4
     hooks:
       - id: cfn-python-lint
         files: 'cfn\.(ya?ml|json)$'
 
   - repo: https://github.com/asottile/seed-isort-config
-    rev: v1.9.3
+    rev: v1.9.4
     hooks:
       - id: seed-isort-config
         args:
@@ -64,14 +64,14 @@ repos:
         args: []
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.4.0
+    rev: v2.5.0
     hooks:
       - id: flake8
 
   - repo: https://github.com/PyCQA/prospector
     # pylint fails to run in 1.1.6.3 and 1.1.6.4
     # see https://github.com/PyCQA/prospector/issues/335
-    rev: 1.1.7
+    rev: 1.2.0
     hooks:
       - id: prospector
         args: ['--profile=prospector_profile.yml']
@@ -80,7 +80,7 @@ repos:
           - 'pytest>=4.6'
 
   - repo: https://github.com/PyCQA/pydocstyle
-    rev: 5.0.1
+    rev: 5.0.2
     hooks:
       - id: pydocstyle
         exclude: (__init__|setup|(docs?|examples?|tests?|utils?)/.*)\.py$
