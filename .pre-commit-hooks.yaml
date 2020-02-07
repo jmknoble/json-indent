@@ -1,0 +1,10 @@
+---
+# https://pre-commit.com
+
+- id: json-indent
+  name: json-indent
+  description: This hook runs json-indent.
+  entry: json-indent --inplace
+  language: python
+  pass_filenames: true
+  types: [file, json]
