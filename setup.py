@@ -60,9 +60,7 @@ SCRIPT_ENTRY_POINTS = {}
 
 PACKAGE_DATA = {"": ["*.config", "*.json", "*.cfg"]}
 
-REQUIREMENTS = [
-
-]
+REQUIREMENTS = []
 
 TEST_SUITE = "tests"
 TEST_REQUIREMENTS = []
