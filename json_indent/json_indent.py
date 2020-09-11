@@ -21,6 +21,14 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
+class JsonParseError(ValueError):
+    def __init__(self, filename, exception):
+        self.filename = filename
+        self.exception = exception
+        self.msg = "{filename}: {exception}".format(filename=filename, exception=exception)
+        super(JsonParseError, self).__init__(self.msg)
+
+
 def _pop_with_default(a_dict, key, default=None):
     """
     Pop a key from a dict and return its value or a default value.
@@ -70,7 +78,10 @@ def load_json(infile, **kwargs):
     unordered = _pop_with_default(kwargs, "unordered", False)
     if sort_keys or not unordered:
         kwargs["object_pairs_hook"] = collections.OrderedDict
-    json_dict = json.load(fp=infile, **kwargs)
+    try:
+        json_dict = json.load(fp=infile, **kwargs)
+    except json.JSONDecodeError as e:
+        raise JsonParseError(infile.name, e)
     return json_dict
 
 

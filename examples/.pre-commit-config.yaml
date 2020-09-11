@@ -7,7 +7,7 @@ default_language_version:
 
 repos:
   - repo: https://github.com/jmknoble/json-indent
-    rev: v2.1.6
+    rev: v2.1.7
     hooks:
       - id: json-indent
 ...
