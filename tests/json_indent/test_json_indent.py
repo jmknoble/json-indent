@@ -307,7 +307,7 @@ class TestJsonIndent(unittest.TestCase):
         cli_args.input_filenames = [DUMMY_PATH_1]
         ji._check_input_and_output_filenames(cli_args)
         self.assertListEqual(
-            cli_args.input_filenames, [ji._normalize_path(DUMMY_PATH_1)]
+            cli_args.input_filenames, [DUMMY_PATH_1]
         )
         self.assertEqual(cli_args.output_filename, "-")
 

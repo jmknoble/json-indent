@@ -211,12 +211,9 @@ def _check_input_and_output_filenames(cli_args):
             raise RuntimeError(
                 "to process more than one input file at a time, use '--inplace'"
             )
-        cli_args.output_filename = _normalize_path(cli_args.output_filename)
-        cli_args.input_filenames[0] = _normalize_path(cli_args.input_filenames[0])
-        if (
-            cli_args.input_filenames[0] != "-"
-            and cli_args.input_filenames[0] == cli_args.output_filename
-        ):
+        output_filename = _normalize_path(cli_args.output_filename)
+        input_filename = _normalize_path(cli_args.input_filenames[0])
+        if input_filename != "-" and input_filename == output_filename:
             raise RuntimeError(
                 "input file and output file are the same; "
                 "use '--inplace' to modify files in place"
@@ -230,7 +227,6 @@ def _check_input_and_output_filenames(cli_args):
                 raise RuntimeError(
                     "reading from stdin does not make sense with '--inplace'"
                 )
-            cli_args.input_filenames[i] = _normalize_path(cli_args.input_filenames[i])
 
 
 def _check_program_args(program_args):
