@@ -25,7 +25,9 @@ class JsonParseError(ValueError):
     def __init__(self, filename, exception):
         self.filename = filename
         self.exception = exception
-        self.msg = "{filename}: {exception}".format(filename=filename, exception=exception)
+        self.msg = "{filename}: {exception}".format(
+            filename=filename, exception=exception
+        )
         super(JsonParseError, self).__init__(self.msg)
 
 
@@ -274,7 +276,10 @@ def cli(*program_args):
     dump_kwargs["separators"] = (item_separator, key_separator)
     dump_kwargs["sort_keys"] = cli_args.sort_keys
 
+    overall_status = 0
+
     for input_filename in cli_args.input_filenames:
+        file_status = 0
         input_iofile = IOFile(input_filename)
         output_iofile = (
             input_iofile if cli_args.inplace else IOFile(cli_args.output_filename)
@@ -285,19 +290,25 @@ def cli(*program_args):
         try:
             data = load_json(input_iofile.file, **load_kwargs)
         except ValueError as e:
-            raise SystemExit(e)
+            if not cli_args.inplace:
+                raise SystemExit(e)
+            overall_status = 1
+            file_status = 1
+            print(e, file=sys.stderr)
 
         input_iofile.close()
 
-        output_iofile.open_for_output()
-        dump_json(data, output_iofile.file, **dump_kwargs)
-        output_iofile.close()
+        if file_status == 0:
+            output_iofile.open_for_output()
+            dump_json(data, output_iofile.file, **dump_kwargs)
+            output_iofile.close()
+
+    return overall_status
 
 
 def main(*program_args):
     """Provide main functionality."""
-    cli(*program_args)
-    sys.exit(0)
+    sys.exit(cli(*program_args))
 
 
 if __name__ == "__main__":
