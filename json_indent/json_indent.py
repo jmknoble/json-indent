@@ -29,6 +29,8 @@ logging.basicConfig(level=logging.DEBUG, stream=sys.stderr)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+JSON_TEXT_DEFAULT_FILENAME = "<text>"
+
 
 class JsonParseError(ValueError):
     def __init__(self, filename, exception):
@@ -96,6 +98,7 @@ def load_json_text(text, filename=None, **kwargs):
     :Returns:
         The JSON data parsed from `text`.
     """
+    filename = JSON_TEXT_DEFAULT_FILENAME if filename is None else filename
     sort_keys = _pop_with_default(kwargs, "sort_keys", False)
     unordered = _pop_with_default(kwargs, "unordered", False)
     if sort_keys or not unordered:
@@ -159,7 +162,7 @@ def load_json(thing, with_text=False, **kwargs):
     """
     if _is_string(thing):
         text = thing
-        data = load_json_text(text, filename="<text>", **kwargs)
+        data = load_json_text(text, **kwargs)
     else:
         (data, text) = load_json_file(thing, **kwargs)
 

@@ -22,14 +22,14 @@ DUMMY_JSON_DATA_ORDERED_DICT = collections.OrderedDict()
 DUMMY_JSON_DATA_ORDERED_DICT[DUMMY_KEY_2] = DUMMY_VALUE_2
 DUMMY_JSON_DATA_ORDERED_DICT[DUMMY_KEY_1] = [DUMMY_VALUE_1]
 
-DUMMY_JSON_DATA_UNFORMATTED = """{{
+DUMMY_JSON_TEXT_UNFORMATTED = """{{
 "{key2}": "{value2}", "{key1}": ["{value1}"]
 }}
 """.format(
     key1=DUMMY_KEY_1, key2=DUMMY_KEY_2, value1=DUMMY_VALUE_1, value2=DUMMY_VALUE_2
 )
 
-DUMMY_JSON_DATA_FORMATTED = """{{
+DUMMY_JSON_TEXT_FORMATTED = """{{
     "{key2}": "{value2}",
     "{key1}": [
         "{value1}"
@@ -39,7 +39,7 @@ DUMMY_JSON_DATA_FORMATTED = """{{
     key1=DUMMY_KEY_1, key2=DUMMY_KEY_2, value1=DUMMY_VALUE_1, value2=DUMMY_VALUE_2
 )
 
-DUMMY_JSON_DATA_SORTED = """{{
+DUMMY_JSON_TEXT_SORTED = """{{
     "{key1}": [
         "{value1}"
     ],
@@ -49,7 +49,7 @@ DUMMY_JSON_DATA_SORTED = """{{
     key1=DUMMY_KEY_1, key2=DUMMY_KEY_2, value1=DUMMY_VALUE_1, value2=DUMMY_VALUE_2
 )
 
-DUMMY_JSON_DATA_COMPACT = '{{"{key2}":"{value2}","{key1}":["{value1}"]}}\n'.format(
+DUMMY_JSON_TEXT_COMPACT = '{{"{key2}":"{value2}","{key1}":["{value1}"]}}\n'.format(
     key1=DUMMY_KEY_1, key2=DUMMY_KEY_2, value1=DUMMY_VALUE_1, value2=DUMMY_VALUE_2
 )
 
@@ -227,40 +227,154 @@ class TestJsonIndent(unittest.TestCase):
 
     def test_JSI_100_load_json(self):
         with open(self.infile.name, "w") as f:
-            f.write(DUMMY_JSON_DATA_UNFORMATTED)
+            f.write(DUMMY_JSON_TEXT_UNFORMATTED)
 
         with open(self.infile.name, "r") as f:
-            json_dict = ji.load_json(f)
+            json_data = ji.load_json(f)
             self.assertDictishEqual(
-                json_dict, DUMMY_JSON_DATA_ORDERED_DICT, ordered=True
+                json_data, DUMMY_JSON_DATA_ORDERED_DICT, ordered=True
             )
 
-        for (ordered, expected_dict) in [
+        for (ordered, expected_data) in [
             (True, DUMMY_JSON_DATA_ORDERED_DICT),
             (False, DUMMY_JSON_DATA_DICT),
         ]:
             with open(self.infile.name, "r") as f:
-                json_dict = ji.load_json(f, unordered=not ordered)
-                self.assertDictishEqual(json_dict, expected_dict, ordered=ordered)
+                json_data = ji.load_json(f, unordered=not ordered)
+                self.assertDictishEqual(json_data, expected_data, ordered=ordered)
             with open(self.infile.name, "r") as f:
-                json_dict = ji.load_json(f, sort_keys=not ordered)
-                self.assertDictishEqual(json_dict, expected_dict, ordered=ordered)
+                json_data = ji.load_json(f, sort_keys=not ordered)
+                self.assertDictishEqual(json_data, expected_data, ordered=ordered)
+
+    def test_JSI_101_load_json_with_text(self):
+        with open(self.infile.name, "w") as f:
+            f.write(DUMMY_JSON_TEXT_UNFORMATTED)
+
+        with open(self.infile.name, "r") as f:
+            (json_data, json_text) = ji.load_json(f, with_text=True)
+            self.assertDictishEqual(
+                json_data, DUMMY_JSON_DATA_ORDERED_DICT, ordered=True
+            )
+            self.assertEqual(json_text, DUMMY_JSON_TEXT_UNFORMATTED)
+
+        for (ordered, expected_data) in [
+            (True, DUMMY_JSON_DATA_ORDERED_DICT),
+            (False, DUMMY_JSON_DATA_DICT),
+        ]:
+            with open(self.infile.name, "r") as f:
+                (json_data, json_text) = ji.load_json(
+                    f, with_text=True, unordered=not ordered
+                )
+                self.assertDictishEqual(json_data, expected_data, ordered=ordered)
+                self.assertEqual(json_text, DUMMY_JSON_TEXT_UNFORMATTED)
+            with open(self.infile.name, "r") as f:
+                (json_data, json_text) = ji.load_json(
+                    f, with_text=True, sort_keys=not ordered
+                )
+                self.assertDictishEqual(json_data, expected_data, ordered=ordered)
+                self.assertEqual(json_text, DUMMY_JSON_TEXT_UNFORMATTED)
+
+    def test_JSI_102_load_json_file(self):
+        with open(self.infile.name, "w") as f:
+            f.write(DUMMY_JSON_TEXT_UNFORMATTED)
+
+        with open(self.infile.name, "r") as f:
+            (json_data, json_text) = ji.load_json_file(f)
+            self.assertDictishEqual(
+                json_data, DUMMY_JSON_DATA_ORDERED_DICT, ordered=True
+            )
+            self.assertEqual(json_text, DUMMY_JSON_TEXT_UNFORMATTED)
+
+        for (ordered, expected_data) in [
+            (True, DUMMY_JSON_DATA_ORDERED_DICT),
+            (False, DUMMY_JSON_DATA_DICT),
+        ]:
+            with open(self.infile.name, "r") as f:
+                (json_data, json_text) = ji.load_json_file(f, unordered=not ordered)
+                self.assertDictishEqual(json_data, expected_data, ordered=ordered)
+                self.assertEqual(json_text, DUMMY_JSON_TEXT_UNFORMATTED)
+            with open(self.infile.name, "r") as f:
+                (json_data, json_text) = ji.load_json_file(f, sort_keys=not ordered)
+                self.assertDictishEqual(json_data, expected_data, ordered=ordered)
+                self.assertEqual(json_text, DUMMY_JSON_TEXT_UNFORMATTED)
+
+    def test_JSI_103_load_json_text(self):
+        json_text = DUMMY_JSON_TEXT_UNFORMATTED
+        json_data = ji.load_json_text(json_text)
+        self.assertDictishEqual(json_data, DUMMY_JSON_DATA_ORDERED_DICT, ordered=True)
+
+        for (ordered, expected_data) in [
+            (True, DUMMY_JSON_DATA_ORDERED_DICT),
+            (False, DUMMY_JSON_DATA_DICT),
+        ]:
+            json_data = ji.load_json_text(json_text, unordered=not ordered)
+            self.assertDictishEqual(json_data, expected_data, ordered=ordered)
+
+            json_data = ji.load_json_text(json_text, sort_keys=not ordered)
+            self.assertDictishEqual(json_data, expected_data, ordered=ordered)
 
     def test_JSI_110_dump_json(self):
         with open(self.outfile.name, "w") as f:
             # Ensure file exists and is empty
             pass
 
-        for (kwargs, json_dict, expected_json_data) in [
-            (PLAIN_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_DATA_FORMATTED),
-            (INDENT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_DATA_FORMATTED),
-            (SORTED_KWARGS, DUMMY_JSON_DATA_DICT, DUMMY_JSON_DATA_SORTED),
-            (COMPACT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_DATA_COMPACT),
+        for (kwargs, json_data, expected_json_text) in [
+            (PLAIN_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
+            (INDENT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
+            (SORTED_KWARGS, DUMMY_JSON_DATA_DICT, DUMMY_JSON_TEXT_SORTED),
+            (COMPACT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_COMPACT),
         ]:
             with open(self.outfile.name, "w") as f:
-                ji.dump_json(json_dict, f, **kwargs)
+                text = ji.dump_json(json_data, f, **kwargs)
+            self.assertEqual(text, expected_json_text)
             with open(self.outfile.name, "r") as f:
-                self.assertEqual(f.read(), expected_json_data)
+                self.assertEqual(f.read(), expected_json_text)
+
+            with open(self.outfile.name, "w") as f:
+                text = ji.dump_json(json_data, outfile=f, **kwargs)
+            self.assertEqual(text, expected_json_text)
+            with open(self.outfile.name, "r") as f:
+                self.assertEqual(f.read(), expected_json_text)
+
+    def test_JSI_111_dump_json_to_text(self):
+        for (kwargs, json_data, expected_json_text) in [
+            (PLAIN_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
+            (INDENT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
+            (SORTED_KWARGS, DUMMY_JSON_DATA_DICT, DUMMY_JSON_TEXT_SORTED),
+            (COMPACT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_COMPACT),
+        ]:
+            text = ji.dump_json(json_data, **kwargs)
+            self.assertEqual(text, expected_json_text)
+
+            text = ji.dump_json(json_data, outfile=None, **kwargs)
+            self.assertEqual(text, expected_json_text)
+
+    def test_JSI_112_dump_json_file(self):
+        with open(self.outfile.name, "w") as f:
+            # Ensure file exists and is empty
+            pass
+
+        for (kwargs, json_data, expected_json_text) in [
+            (PLAIN_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
+            (INDENT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
+            (SORTED_KWARGS, DUMMY_JSON_DATA_DICT, DUMMY_JSON_TEXT_SORTED),
+            (COMPACT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_COMPACT),
+        ]:
+            with open(self.outfile.name, "w") as f:
+                text = ji.dump_json_file(json_data, f, **kwargs)
+            self.assertEqual(text, expected_json_text)
+            with open(self.outfile.name, "r") as f:
+                self.assertEqual(f.read(), expected_json_text)
+
+    def test_JSI_113_dump_json_text(self):
+        for (kwargs, json_data, expected_json_text) in [
+            (PLAIN_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
+            (INDENT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
+            (SORTED_KWARGS, DUMMY_JSON_DATA_DICT, DUMMY_JSON_TEXT_SORTED),
+            (COMPACT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_COMPACT),
+        ]:
+            text = ji.dump_json_text(json_data, **kwargs)
+            self.assertEqual(text, expected_json_text)
 
     def test_JSI_200_check_program_args(self):
         program_args = ji._check_program_args(DUMMY_PROGRAM_ARGS)
@@ -363,14 +477,14 @@ class TestJsonIndent(unittest.TestCase):
         )
 
     def test_JSI_300_cli(self):
-        for (test_args, expected_json_data) in [
-            (ARGS_PLAIN, DUMMY_JSON_DATA_FORMATTED),
-            (ARGS_INDENT, DUMMY_JSON_DATA_FORMATTED),
-            (ARGS_SORTED, DUMMY_JSON_DATA_SORTED),
-            (ARGS_COMPACT, DUMMY_JSON_DATA_COMPACT),
+        for (test_args, expected_json_text) in [
+            (ARGS_PLAIN, DUMMY_JSON_TEXT_FORMATTED),
+            (ARGS_INDENT, DUMMY_JSON_TEXT_FORMATTED),
+            (ARGS_SORTED, DUMMY_JSON_TEXT_SORTED),
+            (ARGS_COMPACT, DUMMY_JSON_TEXT_COMPACT),
         ]:
             with open(self.infile.name, "w") as f:
-                f.write(DUMMY_JSON_DATA_UNFORMATTED)
+                f.write(DUMMY_JSON_TEXT_UNFORMATTED)
             args = (
                 test_args
                 + ARGS_DEBUG
@@ -378,21 +492,21 @@ class TestJsonIndent(unittest.TestCase):
             )
             ji.cli(*args)
             with open(self.outfile.name, "r") as f:
-                self.assertEqual(f.read(), expected_json_data)
+                self.assertEqual(f.read(), expected_json_text)
 
     def test_JSI_301_cli_inplace(self):
-        for (test_args, expected_json_data) in [
-            (ARGS_PLAIN, DUMMY_JSON_DATA_FORMATTED),
-            (ARGS_INDENT, DUMMY_JSON_DATA_FORMATTED),
-            (ARGS_SORTED, DUMMY_JSON_DATA_SORTED),
-            (ARGS_COMPACT, DUMMY_JSON_DATA_COMPACT),
+        for (test_args, expected_json_text) in [
+            (ARGS_PLAIN, DUMMY_JSON_TEXT_FORMATTED),
+            (ARGS_INDENT, DUMMY_JSON_TEXT_FORMATTED),
+            (ARGS_SORTED, DUMMY_JSON_TEXT_SORTED),
+            (ARGS_COMPACT, DUMMY_JSON_TEXT_COMPACT),
         ]:
             with open(self.infile.name, "w") as f:
-                f.write(DUMMY_JSON_DATA_UNFORMATTED)
+                f.write(DUMMY_JSON_TEXT_UNFORMATTED)
             args = test_args + ARGS_DEBUG + ["--inplace", self.infile.name]
             ji.cli(*args)
             with open(self.infile.name, "r") as f:
-                self.assertEqual(f.read(), expected_json_data)
+                self.assertEqual(f.read(), expected_json_text)
 
     def test_JSI_310_cli_version(self):
         with self.assertRaises(SystemExit) as context:  # noqa: F841
