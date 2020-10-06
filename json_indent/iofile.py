@@ -2,6 +2,7 @@
 Provide IOFile class and related exceptions.
 """
 
+import io
 import sys
 
 
@@ -141,3 +142,68 @@ class IOFile(object):
                 self.file.close()
             self.file = None
             self.mode = None
+
+
+class TextIOFile(IOFile):
+    """
+    Provide object model for files that should be read, then written in place.
+
+    :Args:
+        path
+            The path to the file to open for input or output
+
+        input_newline
+            (optional) The newline convention used on input (see
+            `io.open()`:py:meth:)
+
+        output_newline
+            (optional) The newline convention used on output (see
+            `io.open()`:py:meth:)
+    """
+
+    def __init__(self, path, input_newline=None, output_newline=None):
+        super(TextIOFile, self).__init__(path)
+
+        self._io_properties = {
+            "input": {
+                "target_mode": "rt",
+                "newline": input_newline,
+                "stdio_stream": sys.stdin,
+            },
+            "output": {
+                "target_mode": "wt",
+                "newline": output_newline,
+                "stdio_stream": sys.stdout,
+            },
+        }
+
+    def _open_for_purpose(self, purpose):
+        """
+        Open `self.file`:py:attr: for the given purpose.
+
+        :Args:
+            purpose
+                A string with a value of either ``input`` or ``output``
+
+        :Returns:
+            `self.file`
+
+        :Raises:
+            `KeyError`:py:exc: if `purpose` is not one of either ``input`` or ``output``
+        """
+        target_mode = self._get_io_property(purpose, "target_mode")
+        newline = self._get_io_property(purpose, "newline")
+        if self.mode not in {None, target_mode}:
+            self._raise_open_error(purpose)
+        if self.file is None:
+            if self.path == "-":
+                fileish = self._get_io_property(purpose, "stdio_stream").fileno()
+                closefd = False
+            else:
+                fileish = self.path
+                closefd = True
+            self.file = io.open(
+                fileish, mode=target_mode, newline=newline, closefd=closefd
+            )
+            self.mode = target_mode
+        return self.file

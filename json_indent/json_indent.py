@@ -12,13 +12,24 @@ import os.path
 import sys
 
 from json_indent import get_version
-from json_indent.iofile import IOFile
+from json_indent.iofile import TextIOFile
 
-__all__ = ["cli", "dump_json", "load_json", "main"]
+__all__ = [
+    "cli",
+    "dump_json",
+    "dump_json_file",
+    "dump_json_text",
+    "load_json",
+    "load_json_file",
+    "load_json_text",
+    "main",
+]
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stderr)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+JSON_TEXT_DEFAULT_FILENAME = "<text>"
 
 
 class JsonParseError(ValueError):
@@ -29,6 +40,14 @@ class JsonParseError(ValueError):
             filename=filename, exception=exception
         )
         super(JsonParseError, self).__init__(self.msg)
+
+
+def _is_string(thing):
+    try:
+        return isinstance(thing, basestring)
+    except NameError:
+        # Python 3.x: NameError: name 'basestring' is not defined
+        return isinstance(thing, str)
 
 
 def _pop_with_default(a_dict, key, default=None):
@@ -51,16 +70,19 @@ def _pop_with_default(a_dict, key, default=None):
     return a_dict.pop(key) if key in a_dict else default
 
 
-def load_json(infile, **kwargs):
+def load_json_text(text, filename=None, **kwargs):
     """
-    Read JSON data from a file into a (possibly ordered) dictionary.
+    Parse and deserialize JSON data from a string.
 
     :Args:
-        infile
-            Open file to load JSON data from
+        text
+            Raw JSON text
+
+        filename
+            (optional) Input filename associated with the JSON text, if any
 
         kwargs
-            Keyword arguments, most of which are passed unchanged to
+            (optional) Keyword arguments, most of which are passed unchanged to
             `json.load()`:py:func: (but see below).
 
     :Keyword Args:
@@ -74,32 +96,114 @@ def load_json(infile, **kwargs):
             `False`, i.e., preserve key order).
 
     :Returns:
-        A dictionary-ish containing the JSON data read from `infile`.
+        The JSON data parsed from `text`.
     """
+    filename = JSON_TEXT_DEFAULT_FILENAME if filename is None else filename
     sort_keys = _pop_with_default(kwargs, "sort_keys", False)
     unordered = _pop_with_default(kwargs, "unordered", False)
     if sort_keys or not unordered:
         kwargs["object_pairs_hook"] = collections.OrderedDict
     try:
-        json_dict = json.load(fp=infile, **kwargs)
+        data = json.loads(text, **kwargs)
     except json.JSONDecodeError as e:
-        raise JsonParseError(infile.name, e)
-    return json_dict
+        raise JsonParseError(filename, e)
+    return data
 
 
-def dump_json(json_dict, outfile, **kwargs):
+def load_json_file(infile, **kwargs):
     """
-    Write formatted JSON data to a file from a dictionary.
+    Parse and deserialize JSON data from a file.
+
+    :Args:
+        infile
+            Open file-ish to load JSON data from
+
+        kwargs
+            Keyword arguments, passed unchanged to
+            `~json_indent.load_json_text()`:py:func:
+
+    :Returns:
+        A tuple::
+
+            (json_data, json_text)
+
+        where `json_text` is the original text read from `infile`, and
+        `json_data` is the deserialized result.
+    """
+    text = infile.read()
+    data = load_json_text(text, filename=infile.name, **kwargs)
+    return (data, text)
+
+
+def load_json(thing, with_text=False, **kwargs):
+    """
+    Parse and deserialize JSON data from either a file or a string.
+
+    :Args:
+        thing
+            Either a (Unicode) string or an open file-ish to load JSON data from
+
+        with_text
+            See *Returns* below.
+
+        kwargs
+            Keyword arguments, passed unchanged to
+            `~json_indent.load_json_text()`:py:func:
+
+    :Returns:
+        If `with_text` is `True`-ish, return a tuple::
+
+            (json_data, json_text)
+
+        where `json_text` is the original text read from `infile`, and
+        `json_data` is the parsed result.
+
+        Otherwise (the default), return just `json_data`.
+    """
+    if _is_string(thing):
+        text = thing
+        data = load_json_text(text, **kwargs)
+    else:
+        (data, text) = load_json_file(thing, **kwargs)
+
+    return (data, text) if with_text else data
+
+
+def dump_json_text(data, **kwargs):
+    """
+    Serialize and format JSON text from a possibly structured object.
 
     We do this according to parameters in keyword arguments, and we add a final
     trailing newline.
 
     :Args:
-        json_dict
-            Dictionary-ish containing data to write
+        data
+            Data to serialize
+
+        kwargs
+            Keyword arguments, passed to `json.dumps()`:py:func:
+
+    :Returns:
+        The serialized JSON text
+    """
+    text = json.dumps(data, **kwargs)
+    text += "\n"
+    return text
+
+
+def dump_json_file(data, outfile, **kwargs):
+    """
+    Serialize, format, and write JSON text to a file from an object.
+
+    We do this according to parameters in keyword arguments, and we add a final
+    trailing newline.
+
+    :Args:
+        data
+            Data to serialize
 
         outfile
-            Open file to write JSON data to
+            Open file-ish to write JSON data to
 
         kwargs
             Keyword arguments, most of which are passed to
@@ -111,12 +215,48 @@ def dump_json(json_dict, outfile, **kwargs):
             write to is required as `outfile`.
 
     :Returns:
-        Nothing
+        The serialized JSON text
     """
     if "fp" in kwargs:
         kwargs.pop("fp")
-    json.dump(json_dict, fp=outfile, **kwargs)
-    outfile.write("\n")
+    text = dump_json_text(data, **kwargs)
+    outfile.write(text)
+    return text
+
+
+def dump_json(data, outfile=None, **kwargs):
+    """
+    Serialize, format, and write JSON text to a file or string.
+
+    We do this according to parameters in keyword arguments, and we add a final
+    trailing newline.
+
+    :Args:
+        data
+            Data to serialize
+
+        outfile
+            (optional) Open file-ish to write JSON data to
+
+        kwargs
+            Keyword arguments, most of which are passed to
+            `json.dump()`:py:func: (but see below).
+
+    :Keyword Args:
+        fp
+            If this keyword argument is supplied, it is ignored, as the file to
+            write to is required as `outfile`.
+
+    :Returns:
+        The serialized JSON text
+    """
+    if "fp" in kwargs:
+        kwargs.pop("fp")
+    if outfile is not None:
+        text = dump_json_file(data, outfile, **kwargs)
+    else:
+        text = dump_json_text(data, **kwargs)
+    return text
 
 
 def _setup_argparser():
@@ -280,9 +420,11 @@ def cli(*program_args):
 
     for input_filename in cli_args.input_filenames:
         file_status = 0
-        input_iofile = IOFile(input_filename)
+        input_iofile = TextIOFile(input_filename, output_newline="\n")
         output_iofile = (
-            input_iofile if cli_args.inplace else IOFile(cli_args.output_filename)
+            input_iofile
+            if cli_args.inplace
+            else TextIOFile(cli_args.output_filename, output_newline="\n")
         )
 
         input_iofile.open_for_input()
