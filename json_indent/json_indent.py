@@ -469,13 +469,16 @@ def cli(*program_args):
     for input_filename in cli_args.input_filenames:
         file_status = 0
         input_iofile = TextIOFile(
-            input_filename, output_newline=NEWLINE_VALUES[cli_args.newlines]
+            input_filename,
+            input_newline="",
+            output_newline=NEWLINE_VALUES[cli_args.newlines],
         )
         output_iofile = (
             input_iofile
             if cli_args.inplace
             else TextIOFile(
                 cli_args.output_filename,
+                input_newline="",
                 output_newline=NEWLINE_VALUES[cli_args.newlines],
             )
         )
