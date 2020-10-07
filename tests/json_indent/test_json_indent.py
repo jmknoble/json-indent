@@ -2,6 +2,7 @@
 
 import argparse
 import collections
+import io
 import os
 import os.path
 import sys
@@ -76,6 +77,16 @@ CLI_OPTIONS = {
     "version": ["-V", "--version"],
 }
 
+CLI_MULTI_OPTIONS = {
+    # dest: [{option_strings}, ...]
+    "newlines": [
+        {"--newlines", "--line-endings"},
+        {"-L", "--linux"},
+        {"-N", "--native"},
+        {"-M", "--microsoft"},
+    ],
+}
+
 CLI_ARGUMENTS = {
     # dest: nargs
     "input_filenames": "*"
@@ -99,6 +110,32 @@ ARGS_SORTED = ["--indent", "4", "--sort-keys"]
 ARGS_COMPACT = ["--compact"]
 
 ARGS_DEBUG = ["--debug"] if "DEBUG" in os.environ else []
+
+NEWLINE_ARGS_LINUX = [
+    ["-L"],
+    ["--newlines=linux"],
+    ["--newlines", "linux"],
+    ["--line-endings=linux"],
+    ["--line-endings", "linux"],
+    ["--newlines", "macos"],
+    ["--newlines", "unix"],
+]
+
+NEWLINE_ARGS_NATIVE = [
+    ["-N"],
+    ["--newlines", "native"],
+]
+
+NEWLINE_ARGS_MICROSOFT = [
+    ["-M"],
+    ["--newlines=microsoft"],
+    ["--newlines", "microsoft"],
+    ["--line-endings=microsoft"],
+    ["--line-endings", "microsoft"],
+    ["--newlines", "dos"],
+    ["--newlines", "msft"],
+    ["--newlines", "windows"],
+]
 
 
 def deep_convert_to_plain_dict(an_odict):
@@ -142,6 +179,7 @@ class TestJsonIndent(unittest.TestCase):
             input_filenames=[],
             output_filename=None,
             inplace=False,
+            newlines="native",
             compact=False,
             indent=2,
             sort_keys=False,
@@ -389,10 +427,18 @@ class TestJsonIndent(unittest.TestCase):
         self.assertIsInstance(argparser, argparse.ArgumentParser)
         self.assertGreater(len(argparser.description), 0)
         for action in argparser._actions:
-            self.assertTrue(action.dest in CLI_OPTIONS or action.dest in CLI_ARGUMENTS)
+            self.assertTrue(
+                action.dest in CLI_OPTIONS
+                or action.dest in CLI_MULTI_OPTIONS
+                or action.dest in CLI_ARGUMENTS
+            )
             if action.dest in CLI_OPTIONS:
                 self.assertSetEqual(
                     set(action.option_strings), set(CLI_OPTIONS[action.dest])
+                )
+            elif action.dest in CLI_MULTI_OPTIONS:
+                self.assertIn(
+                    set(action.option_strings), CLI_MULTI_OPTIONS[action.dest]
                 )
             else:
                 self.assertEqual(action.nargs, CLI_ARGUMENTS[action.dest])
@@ -507,6 +553,25 @@ class TestJsonIndent(unittest.TestCase):
             ji.cli(*args)
             with open(self.infile.name, "r") as f:
                 self.assertEqual(f.read(), expected_json_text)
+
+    def test_JSI_302_cli_newlines(self):
+        for (arg_set, expected_json_text) in [
+            (NEWLINE_ARGS_LINUX, DUMMY_JSON_TEXT_FORMATTED),
+            (NEWLINE_ARGS_NATIVE, DUMMY_JSON_TEXT_FORMATTED.replace("\n", os.linesep)),
+            (NEWLINE_ARGS_MICROSOFT, DUMMY_JSON_TEXT_FORMATTED.replace("\n", "\r\n")),
+        ]:
+            for test_args in arg_set:
+                with open(self.infile.name, "w") as f:
+                    f.write(DUMMY_JSON_TEXT_UNFORMATTED)
+                args = (
+                    test_args
+                    + ARGS_PLAIN
+                    + ARGS_DEBUG
+                    + ["--output", self.outfile.name, self.infile.name]
+                )
+                ji.cli(*args)
+                with io.open(self.outfile.name, "rt", newline="") as f:
+                    self.assertEqual(f.read(), expected_json_text)
 
     def test_JSI_310_cli_version(self):
         with self.assertRaises(SystemExit) as context:  # noqa: F841

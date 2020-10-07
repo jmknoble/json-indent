@@ -31,6 +31,38 @@ logger.setLevel(logging.INFO)
 
 JSON_TEXT_DEFAULT_FILENAME = "<text>"
 
+NEWLINE_FORMAT_LINUX = "linux"
+NEWLINE_FORMAT_MICROSOFT = "microsoft"
+NEWLINE_FORMAT_NATIVE = "native"
+
+NEWLINE_FORMATS = [
+    NEWLINE_FORMAT_LINUX,
+    NEWLINE_FORMAT_MICROSOFT,
+    NEWLINE_FORMAT_NATIVE,
+]
+
+NEWLINE_FORMAT_ALIAS_DOS = "dos"
+NEWLINE_FORMAT_ALIAS_MACOS = "macos"
+NEWLINE_FORMAT_ALIAS_MSFT = "msft"
+NEWLINE_FORMAT_ALIAS_UNIX = "unix"
+NEWLINE_FORMAT_ALIAS_WINDOWS = "windows"
+
+NEWLINE_FORMAT_ALIASES = {
+    NEWLINE_FORMAT_ALIAS_DOS: NEWLINE_FORMAT_MICROSOFT,
+    NEWLINE_FORMAT_ALIAS_MACOS: NEWLINE_FORMAT_LINUX,
+    NEWLINE_FORMAT_ALIAS_MSFT: NEWLINE_FORMAT_MICROSOFT,
+    NEWLINE_FORMAT_ALIAS_UNIX: NEWLINE_FORMAT_LINUX,
+    NEWLINE_FORMAT_ALIAS_WINDOWS: NEWLINE_FORMAT_MICROSOFT,
+}
+
+ALL_NEWLINE_FORMATS = sorted(NEWLINE_FORMATS + list(NEWLINE_FORMAT_ALIASES.keys()))
+
+NEWLINE_VALUES = {
+    NEWLINE_FORMAT_LINUX: "\n",
+    NEWLINE_FORMAT_MICROSOFT: "\r\n",
+    NEWLINE_FORMAT_NATIVE: None,
+}
+
 
 class JsonParseError(ValueError):
     def __init__(self, filename, exception):
@@ -262,6 +294,7 @@ def dump_json(data, outfile=None, **kwargs):
 def _setup_argparser():
     default_indent = 2
     default_inplace = False
+    default_newlines = NEWLINE_FORMAT_NATIVE
     default_sort = False
     default_compact = False
     default_debug = False
@@ -299,6 +332,40 @@ def _setup_argparser():
             default_inplace
         ),
     )
+    newlines_group = argp.add_mutually_exclusive_group()
+    newlines_group.add_argument(
+        "--newlines",
+        "--line-endings",
+        dest="newlines",
+        action="store",
+        choices=ALL_NEWLINE_FORMATS,
+        default=default_newlines,
+        help="newline format (default: {})".format(default_newlines),
+    )
+    newlines_group.add_argument(
+        "-L",
+        "--linux",
+        dest="newlines",
+        action="store_const",
+        const=NEWLINE_FORMAT_LINUX,
+        help="same as '--newlines {}'".format(NEWLINE_FORMAT_LINUX),
+    )
+    newlines_group.add_argument(
+        "-M",
+        "--microsoft",
+        dest="newlines",
+        action="store_const",
+        const=NEWLINE_FORMAT_MICROSOFT,
+        help="same as '--newlines {}'".format(NEWLINE_FORMAT_MICROSOFT),
+    )
+    newlines_group.add_argument(
+        "-N",
+        "--native",
+        dest="newlines",
+        action="store_const",
+        const=NEWLINE_FORMAT_NATIVE,
+        help="same as '--newlines {}'".format(NEWLINE_FORMAT_NATIVE),
+    )
     argp.add_argument(
         "-c",
         "--compact",
@@ -332,6 +399,11 @@ def _setup_argparser():
     )
     argp.add_argument("-V", "--version", action="version", version=get_version())
     return argp
+
+
+def _check_newlines(cli_args):
+    if cli_args.newlines not in NEWLINE_FORMATS:
+        cli_args.newlines = NEWLINE_FORMAT_ALIASES[cli_args.newlines]
 
 
 def _normalize_path(path):
@@ -392,6 +464,7 @@ def cli(*program_args):
     program_args = _check_program_args(program_args)
     argparser = _setup_argparser()
     cli_args = argparser.parse_args(program_args)
+    _check_newlines(cli_args)
     _check_input_and_output_filenames(cli_args)
 
     load_kwargs = {}
@@ -420,11 +493,16 @@ def cli(*program_args):
 
     for input_filename in cli_args.input_filenames:
         file_status = 0
-        input_iofile = TextIOFile(input_filename, output_newline="\n")
+        input_iofile = TextIOFile(
+            input_filename, output_newline=NEWLINE_VALUES[cli_args.newlines]
+        )
         output_iofile = (
             input_iofile
             if cli_args.inplace
-            else TextIOFile(cli_args.output_filename, output_newline="\n")
+            else TextIOFile(
+                cli_args.output_filename,
+                output_newline=NEWLINE_VALUES[cli_args.newlines],
+            )
         )
 
         input_iofile.open_for_input()
