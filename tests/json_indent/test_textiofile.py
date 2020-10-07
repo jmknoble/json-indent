@@ -1,5 +1,7 @@
 """Tests for json_indent.iofile"""
 
+from __future__ import absolute_import
+
 import os
 import sys
 import tempfile
@@ -30,7 +32,8 @@ class TestTextIOFile(unittest.TestCase):
         e = context.exception
         message = e.args[0]
         expected_messages = {
-            "python-2.7": "__init__() takes exactly 2 arguments (1 given)",
+            "python-2.7-exactly": "__init__() takes exactly 2 arguments (1 given)",
+            "python-2.7-at-least": "__init__() takes at least 2 arguments (1 given)",
             "python-3.x": "__init__() missing 1 required positional argument: 'path'",
         }
         self.assertIn(message, expected_messages.values())

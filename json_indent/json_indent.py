@@ -2,7 +2,7 @@
 Provide main functionality for `json_indent`:py:mod: parser/indenter/formatter.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import argparse
 import collections
@@ -13,6 +13,7 @@ import sys
 
 from json_indent import get_version
 from json_indent.iofile import TextIOFile
+from json_indent.util import is_string, pop_with_default, to_unicode
 
 __all__ = [
     "cli",
@@ -74,34 +75,6 @@ class JsonParseError(ValueError):
         super(JsonParseError, self).__init__(self.msg)
 
 
-def _is_string(thing):
-    try:
-        return isinstance(thing, basestring)
-    except NameError:
-        # Python 3.x: NameError: name 'basestring' is not defined
-        return isinstance(thing, str)
-
-
-def _pop_with_default(a_dict, key, default=None):
-    """
-    Pop a key from a dict and return its value or a default value.
-
-    :Args:
-        a_dict
-            Dictionary to look for `key` in
-
-        key
-            Key to look for in `a_dict`
-
-        default
-            Default value to return if `key` is not present
-
-    :Returns:
-        `a_dict`[`key`] if `key` is present, otherwise `default`
-    """
-    return a_dict.pop(key) if key in a_dict else default
-
-
 def load_json_text(text, filename=None, **kwargs):
     """
     Parse and deserialize JSON data from a string.
@@ -131,8 +104,8 @@ def load_json_text(text, filename=None, **kwargs):
         The JSON data parsed from `text`.
     """
     filename = JSON_TEXT_DEFAULT_FILENAME if filename is None else filename
-    sort_keys = _pop_with_default(kwargs, "sort_keys", False)
-    unordered = _pop_with_default(kwargs, "unordered", False)
+    sort_keys = pop_with_default(kwargs, "sort_keys", False)
+    unordered = pop_with_default(kwargs, "unordered", False)
     if sort_keys or not unordered:
         kwargs["object_pairs_hook"] = collections.OrderedDict
     try:
@@ -163,6 +136,7 @@ def load_json_file(infile, **kwargs):
         `json_data` is the deserialized result.
     """
     text = infile.read()
+    text = to_unicode(text)
     data = load_json_text(text, filename=infile.name, **kwargs)
     return (data, text)
 
@@ -192,7 +166,7 @@ def load_json(thing, with_text=False, **kwargs):
 
         Otherwise (the default), return just `json_data`.
     """
-    if _is_string(thing):
+    if is_string(thing):
         text = thing
         data = load_json_text(text, **kwargs)
     else:
@@ -220,6 +194,7 @@ def dump_json_text(data, **kwargs):
     """
     text = json.dumps(data, **kwargs)
     text += "\n"
+    text = to_unicode(text)
     return text
 
 
