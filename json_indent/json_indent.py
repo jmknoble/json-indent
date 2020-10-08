@@ -6,6 +6,7 @@ from __future__ import absolute_import, print_function
 
 import argparse
 import collections
+import difflib
 import json
 import logging
 import os.path
@@ -35,6 +36,8 @@ STATUS_SYNTAX_ERROR = 1
 STATUS_CHANGED = 99
 
 JSON_TEXT_DEFAULT_FILENAME = "<text>"
+
+DIFF_CONTEXT_LINES = 3
 
 NEWLINE_FORMAT_LINUX = "linux"
 NEWLINE_FORMAT_MICROSOFT = "microsoft"
@@ -270,6 +273,24 @@ def dump_json(data, outfile=None, **kwargs):
     return text
 
 
+def _compute_diff(filename, input_text, output_text, context_lines=DIFF_CONTEXT_LINES):
+    input_filename = os.path.join("a", filename)
+    output_filename = os.path.join("b", filename)
+
+    input_lines = input_text.split("\n")
+    output_lines = output_text.split("\n")
+
+    return difflib.unified_diff(
+        input_lines,
+        output_lines,
+        fromfile=input_filename,
+        tofile=output_filename,
+        n=context_lines,
+        # TODO: Remove this if we start using readlines() to get input/output text.
+        lineterm="",
+    )
+
+
 def _setup_argparser():
     default_indent = 2
     default_inplace = False
@@ -320,6 +341,15 @@ def _setup_argparser():
         action="store_true",
         default=False,
         help="when used with '--inplace', note when a file has changed",
+    )
+    diff_group.add_argument(
+        "-D",
+        "--diff",
+        "--show-diff",
+        dest="show_diff",
+        action="store_true",
+        default=False,
+        help="when used with '--inplace', show differences when a file has changed",
     )
     newlines_group = argp.add_mutually_exclusive_group()
     newlines_group.add_argument(
@@ -435,6 +465,8 @@ def _check_input_and_output_filenames(cli_args):
 def _check_diff_args(cli_args):
     if cli_args.show_changed and not cli_args.inplace:
         raise RuntimeError("'-C/--show-changed' only makes sense with '--inplace'")
+    if cli_args.show_diff and not cli_args.inplace:
+        raise RuntimeError("'-D/--show-diff' only makes sense with '--inplace'")
 
 
 def _check_program_args(program_args):
@@ -528,7 +560,7 @@ def cli(*program_args):
             output_iofile.open_for_output()
             dump_json(data, output_iofile.file, **dump_kwargs)
             output_iofile.close()
-            if cli_args.inplace and cli_args.show_changed:
+            if cli_args.inplace and (cli_args.show_changed or cli_args.show_diff):
                 output_iofile.open_for_input()
                 output_text = output_iofile.file.read()
                 if input_text != output_text:
@@ -539,6 +571,11 @@ def cli(*program_args):
                         "Reformatted {}".format(output_iofile.file.name),
                         file=sys.stderr,
                     )
+                    if cli_args.show_diff:
+                        for line in _compute_diff(
+                            output_iofile.file.name, input_text, output_text
+                        ):
+                            print(line)
                 output_iofile.close()
 
     return overall_status
