@@ -6,6 +6,7 @@ from __future__ import absolute_import, print_function
 
 import argparse
 import collections
+import difflib
 import json
 import logging
 import os.path
@@ -30,7 +31,13 @@ logging.basicConfig(level=logging.DEBUG, stream=sys.stderr)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+STATUS_OK = 0
+STATUS_SYNTAX_ERROR = 1
+STATUS_CHANGED = 99
+
 JSON_TEXT_DEFAULT_FILENAME = "<text>"
+
+DIFF_CONTEXT_LINES = 3
 
 NEWLINE_FORMAT_LINUX = "linux"
 NEWLINE_FORMAT_MICROSOFT = "microsoft"
@@ -266,6 +273,24 @@ def dump_json(data, outfile=None, **kwargs):
     return text
 
 
+def _compute_diff(filename, input_text, output_text, context_lines=DIFF_CONTEXT_LINES):
+    input_filename = os.path.join("a", filename)
+    output_filename = os.path.join("b", filename)
+
+    input_lines = input_text.split("\n")
+    output_lines = output_text.split("\n")
+
+    return difflib.unified_diff(
+        input_lines,
+        output_lines,
+        fromfile=input_filename,
+        tofile=output_filename,
+        n=context_lines,
+        # TODO: Remove this if we start using readlines() to get input/output text.
+        lineterm="",
+    )
+
+
 def _setup_argparser():
     default_indent = 2
     default_inplace = False
@@ -306,6 +331,25 @@ def _setup_argparser():
         help="write changes to input file in place (default: {})".format(
             default_inplace
         ),
+    )
+    diff_group = argp.add_mutually_exclusive_group()
+    diff_group.add_argument(
+        "-C",
+        "--changed",
+        "--show-changed",
+        dest="show_changed",
+        action="store_true",
+        default=False,
+        help="when used with '--inplace', note when a file has changed",
+    )
+    diff_group.add_argument(
+        "-D",
+        "--diff",
+        "--show-diff",
+        dest="show_diff",
+        action="store_true",
+        default=False,
+        help="when used with '--inplace', show differences when a file has changed",
     )
     newlines_group = argp.add_mutually_exclusive_group()
     newlines_group.add_argument(
@@ -418,6 +462,13 @@ def _check_input_and_output_filenames(cli_args):
                 )
 
 
+def _check_diff_args(cli_args):
+    if cli_args.show_changed and not cli_args.inplace:
+        raise RuntimeError("'-C/--show-changed' only makes sense with '--inplace'")
+    if cli_args.show_diff and not cli_args.inplace:
+        raise RuntimeError("'-D/--show-diff' only makes sense with '--inplace'")
+
+
 def _check_program_args(program_args):
     """Check arguments supplied to main program and add defaults."""
     if program_args:
@@ -434,14 +485,7 @@ def _check_program_args(program_args):
     return program_args
 
 
-def cli(*program_args):
-    """Process command-line."""
-    program_args = _check_program_args(program_args)
-    argparser = _setup_argparser()
-    cli_args = argparser.parse_args(program_args)
-    _check_newlines(cli_args)
-    _check_input_and_output_filenames(cli_args)
-
+def _compose_kwargs(cli_args):
     load_kwargs = {}
     dump_kwargs = {}
 
@@ -464,18 +508,35 @@ def cli(*program_args):
     dump_kwargs["separators"] = (item_separator, key_separator)
     dump_kwargs["sort_keys"] = cli_args.sort_keys
 
-    overall_status = 0
+    return (load_kwargs, dump_kwargs)
+
+
+def cli(*program_args):
+    """Process command-line."""
+    program_args = _check_program_args(program_args)
+    argparser = _setup_argparser()
+    cli_args = argparser.parse_args(program_args)
+    _check_diff_args(cli_args)
+    _check_newlines(cli_args)
+    _check_input_and_output_filenames(cli_args)
+
+    (load_kwargs, dump_kwargs) = _compose_kwargs(cli_args)
+
+    overall_status = STATUS_OK
 
     for input_filename in cli_args.input_filenames:
-        file_status = 0
+        file_status = STATUS_OK
         input_iofile = TextIOFile(
-            input_filename, output_newline=NEWLINE_VALUES[cli_args.newlines]
+            input_filename,
+            input_newline="",
+            output_newline=NEWLINE_VALUES[cli_args.newlines],
         )
         output_iofile = (
             input_iofile
             if cli_args.inplace
             else TextIOFile(
                 cli_args.output_filename,
+                input_newline="",
                 output_newline=NEWLINE_VALUES[cli_args.newlines],
             )
         )
@@ -483,20 +544,39 @@ def cli(*program_args):
         input_iofile.open_for_input()
 
         try:
-            data = load_json(input_iofile.file, **load_kwargs)
+            (data, input_text) = load_json(
+                input_iofile.file, with_text=True, **load_kwargs
+            )
         except ValueError as e:
             if not cli_args.inplace:
                 raise SystemExit(e)
-            overall_status = 1
-            file_status = 1
+            overall_status = STATUS_SYNTAX_ERROR
+            file_status = STATUS_SYNTAX_ERROR
             print(e, file=sys.stderr)
 
         input_iofile.close()
 
-        if file_status == 0:
+        if file_status != STATUS_SYNTAX_ERROR:
             output_iofile.open_for_output()
             dump_json(data, output_iofile.file, **dump_kwargs)
             output_iofile.close()
+            if cli_args.inplace and (cli_args.show_changed or cli_args.show_diff):
+                output_iofile.open_for_input()
+                output_text = output_iofile.file.read()
+                if input_text != output_text:
+                    file_status = STATUS_CHANGED
+                    if overall_status != STATUS_SYNTAX_ERROR:
+                        overall_status = file_status
+                    print(
+                        "Reformatted {}".format(output_iofile.file.name),
+                        file=sys.stderr,
+                    )
+                    if cli_args.show_diff:
+                        for line in _compute_diff(
+                            output_iofile.file.name, input_text, output_text
+                        ):
+                            print(line)
+                output_iofile.close()
 
     return overall_status
 

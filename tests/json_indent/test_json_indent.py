@@ -73,6 +73,8 @@ CLI_OPTIONS = {
     "help": ["-h", "--help"],
     "output_filename": ["-o", "--output"],
     "inplace": ["-I", "--inplace", "--in-place"],
+    "show_changed": ["-C", "--changed", "--show-changed"],
+    "show_diff": ["-D", "--diff", "--show-diff"],
     "compact": ["-c", "--compact"],
     "indent": ["-n", "--indent"],
     "sort_keys": ["-s", "--sort-keys"],
