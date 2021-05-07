@@ -4,7 +4,7 @@
 - id: json-indent
   name: json-indent
   description: This hook runs json-indent.
-  entry: json-indent --inplace
+  entry: json-indent --inplace --changed
   language: python
   pass_filenames: true
   types: [file, json]
