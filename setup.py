@@ -3,7 +3,7 @@
 # https://packaging.python.org/distributing/#setup-py
 
 try:
-    from setuptools import setup, find_packages
+    from setuptools import find_packages, setup
 except ImportError as e:
     error_message = "Unable to find setuptools;"
     error_message += (
