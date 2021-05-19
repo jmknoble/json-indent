@@ -60,12 +60,28 @@ SCRIPT_ENTRY_POINTS = {}
 
 PACKAGE_DATA = {"": ["*.config", "*.json", "*.cfg"]}
 
-REQUIREMENTS = []
+SETUP_DIR = os.path.dirname(os.path.realpath(__file__))
+
+
+def get_requirements_from_file(dirname, basename, default=None):
+    reqs_path = os.path.join(dirname, basename)
+    if os.path.isfile(reqs_path):
+        with open(reqs_path) as f:
+            return [x.strip() for x in f if not x.strip().startswith("#")]
+    else:
+        return [] if default is None else default
+
+
+REQUIREMENTS = get_requirements_from_file(SETUP_DIR, "requirements.txt")
+DEV_DIR = "dev"
+TEST_REQUIREMENTS = get_requirements_from_file(
+    SETUP_DIR, os.path.join(DEV_DIR, "requirements_test.txt")
+)
+SETUP_REQUIREMENTS = get_requirements_from_file(
+    SETUP_DIR, os.path.join(DEV_DIR, "requirements_dev.txt")
+)
 
 TEST_SUITE = "tests"
-TEST_REQUIREMENTS = []
-
-SETUP_REQUIREMENTS = []
 
 KEYWORDS = "cli indent json pre-commit reformat"
 CLASSIFIERS = [
@@ -81,6 +97,8 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Topic :: System :: Distributed Computing",
     "Topic :: Text Processing :: Filters",
     "Topic :: Utilities",

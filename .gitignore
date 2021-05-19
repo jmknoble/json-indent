@@ -55,12 +55,14 @@ Sessionx.vim
 # Microsoft Visual Studio Code artifacts
 .vscode
 
+# Microsoft Visual Studio artifacts
+.vs
+
 ####################
 # Python language/interpreter artifacts
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
-.pytest_cache/
 *.py[cod]
 *$py.class
 
@@ -75,10 +77,35 @@ eggs/
 *.manifest
 *.old
 
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
 # Sphinx documentation
 *.bak
 docs/build/
 docs/sphinx/
+
+# Virtual environments
+[._]direnv
+[._]env
+[._]venv
+[._]virtualenv
+venv
+virtualenv
+
+# Pyenv
+.python-version
 
 ####################
 # https://github.com/github/gitignore/blob/master/Global/Linux.gitignore

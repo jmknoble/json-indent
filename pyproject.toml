@@ -1,6 +1,6 @@
 [tool.black]
 
-# https://github.com/ambv/black
+# https://github.com/psf/black
 
 line-length = 88
 target-version = ['py36']

@@ -62,7 +62,7 @@ BuildSphinxDocSource() {
 
     (
         set -e -x
-        sphinx-apidoc \
+        python -m sphinx.ext.apidoc \
             --full \
             --separate \
             --module-first \

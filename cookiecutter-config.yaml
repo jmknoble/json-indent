@@ -1,16 +1,14 @@
 default_context:
   category: general
   description: Simple Python-based JSON parser/indenter/formatter
-  destination: github
   git_base_url: https://github.com
   git_group: jmknoble
   git_project: json-indent
   git_url: https://github.com/jmknoble/json-indent
   package_name: json_indent
-  prefix: ''
   project_name: json-indent
   project_type: python
   team_email: jmknoble@pobox.com
   team_name: Jim Knoble
   title: json-indent
-  version: 2.4.1
+  version: 2.4.2
