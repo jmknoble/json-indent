@@ -23,7 +23,7 @@ DESCRIPTION = (
 DEFAULT_TAG_PREFIX = "v"
 DEFAULT_TAG_SUFFIX = ""
 
-SAFETY_MESSAGES = [  # exactly 10 required
+SAFETY_MESSAGES = [
     "Make sure there are sufficient parallel universes available.",
     "Are you wearing your paradox protection headgear?",
     "Commit log may turn into a big ball of wibbly-wobbly, timey-wimey stuff.",
@@ -234,19 +234,26 @@ def _store_stable_version(version, stable_version_file, dry_run):
         if not dry_run:
             with open(stable_version_file, "w") as f:
                 f.write(version + "\n")
-        commit_command = [
-            "git",
-            "commit",
-            "-m",
-            "Update stable version to {version}".format(version=version),
-            stable_version_file,
-        ]
-        runcommand.run_command(
-            commit_command,
-            check=True,
+        status = runcommand.run_command(
+            ["git", "diff", "-s", "--exit-code", stable_version_file],
+            check=False,
             show_trace=True,
             dry_run=dry_run,
         )
+        if dry_run or status == 1:
+            commit_command = [
+                "git",
+                "commit",
+                "-m",
+                "Update stable version to {version}".format(version=version),
+                stable_version_file,
+            ]
+            runcommand.run_command(
+                commit_command,
+                check=True,
+                show_trace=True,
+                dry_run=dry_run,
+            )
 
 
 def main(*argv):
@@ -305,16 +312,35 @@ def main(*argv):
                 )
                 return 1
 
-    tag_command.append(project_version)  # Correct, not a duplicate
+    tag_command.append(project_version)
 
     if args.commit is not None:
         tag_command.append(args.commit)
 
     if args.stable:
-        # Must do this before tagging
         _store_stable_version(
             bare_project_version, args.stable_version_file, dry_run=args.dry_run
         )
+        stable_tag_command = list(base_tag_command)
+        stable_tag_command.append("-m")
+        stable_tag_command.append(args.stable_message)
+        stable_tag_command.append("--force")
+        stable_tag_command.append(args.stable_tag)
+        if args.commit is not None:
+            stable_tag_command.append(args.commit)
+        runcommand.print_trace(
+            ["Tagging", project_version, "as stable ..."],
+            trace_prefix="",
+            dry_run=args.dry_run,
+        )
+        status = runcommand.run_command(
+            stable_tag_command,
+            check=False,
+            show_trace=True,
+            dry_run=args.dry_run,
+        )
+    if status != 0:
+        return status
 
     status = runcommand.run_command(
         tag_command,
@@ -322,28 +348,6 @@ def main(*argv):
         show_trace=True,
         dry_run=args.dry_run,
     )
-    if status != 0:
-        return status
-
-    if args.stable:
-        tag_command = list(base_tag_command)
-        tag_command.append("-m")
-        tag_command.append(args.stable_message)
-        tag_command.append("--force")
-        tag_command.append(args.stable_tag)
-        if args.commit is not None:
-            tag_command.append(args.commit)
-        runcommand.print_trace(
-            ["Tagging", project_version, "as stable ..."],
-            trace_prefix="",
-            dry_run=args.dry_run,
-        )
-        status = runcommand.run_command(
-            tag_command,
-            check=False,
-            show_trace=True,
-            dry_run=args.dry_run,
-        )
 
     return status
 
