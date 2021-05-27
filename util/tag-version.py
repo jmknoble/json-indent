@@ -286,11 +286,10 @@ def main(*argv):
     if args.stable_message is None:
         args.stable_message = project_version
 
-    base_tag_command = ["git", "tag", "-a"]
+    base_tag_command = ["git", "tag"]
 
     tag_command = list(base_tag_command)
-    tag_command.append("-m")
-    tag_command.append(args.message)
+    tag_command.extend(["-a", "-m", args.message])
 
     if args.rewrite_history:
         tag_command.append("--force")
@@ -318,14 +317,23 @@ def main(*argv):
         tag_command.append(args.commit)
 
     if args.stable:
+        # Must do this before tagging
         _store_stable_version(
             bare_project_version, args.stable_version_file, dry_run=args.dry_run
         )
+
+    status = runcommand.run_command(
+        tag_command,
+        check=False,
+        show_trace=True,
+        dry_run=args.dry_run,
+    )
+    if status != 0:
+        return status
+
+    if args.stable:
         stable_tag_command = list(base_tag_command)
-        stable_tag_command.append("-m")
-        stable_tag_command.append(args.stable_message)
-        stable_tag_command.append("--force")
-        stable_tag_command.append(args.stable_tag)
+        stable_tag_command.extend(["--force", args.stable_tag])
         if args.commit is not None:
             stable_tag_command.append(args.commit)
         runcommand.print_trace(
@@ -339,15 +347,6 @@ def main(*argv):
             show_trace=True,
             dry_run=args.dry_run,
         )
-    if status != 0:
-        return status
-
-    status = runcommand.run_command(
-        tag_command,
-        check=False,
-        show_trace=True,
-        dry_run=args.dry_run,
-    )
 
     return status
 
