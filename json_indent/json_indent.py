@@ -411,6 +411,11 @@ def _setup_argparser():
         help="sort output alphabetically by key (default: same order as read)",
     )
     argp.add_argument(
+        "--pre-commit",
+        action="store_true",
+        help="Shortcut for '--inplace --changed'",
+    )
+    argp.add_argument(
         "--debug",
         action="store_true",
         default=default_debug,
@@ -460,6 +465,14 @@ def _check_input_and_output_filenames(cli_args):
                 raise RuntimeError(
                     "reading from stdin does not make sense with '--inplace'"
                 )
+
+
+def _check_pre_commit_args(cli_args):
+    if not cli_args.pre_commit:
+        return
+    cli_args.inplace = True
+    if not cli_args.show_diff:
+        cli_args.show_changed = True
 
 
 def _check_diff_args(cli_args):
@@ -516,6 +529,7 @@ def cli(*program_args):
     program_args = _check_program_args(program_args)
     argparser = _setup_argparser()
     cli_args = argparser.parse_args(program_args)
+    _check_pre_commit_args(cli_args)
     _check_diff_args(cli_args)
     _check_newlines(cli_args)
     _check_input_and_output_filenames(cli_args)
