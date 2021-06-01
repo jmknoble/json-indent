@@ -2,7 +2,7 @@
 
 __author__ = 'Jim Knoble'
 __email__ = 'jmknoble@pobox.com'
-__version__ = '2.5.2'
+__version__ = '2.5.3'
 
 # fmt: on
 
