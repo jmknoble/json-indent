@@ -73,19 +73,22 @@ CLI_OPTIONS = {
     "help": ["-h", "--help"],
     "output_filename": ["-o", "--output"],
     "inplace": ["-I", "--inplace", "--in-place"],
+    "pre_commit": ["--pre-commit"],
     "show_changed": ["-C", "--changed", "--show-changed"],
     "show_diff": ["-D", "--diff", "--show-diff"],
     "compact": ["-c", "--compact"],
     "indent": ["-n", "--indent"],
     "sort_keys": ["-s", "--sort-keys"],
     "debug": ["--debug"],
+    "completion_help": ["--completion-help"],
+    "bash_completion": ["--bash-completion"],
     "version": ["-V", "--version"],
 }
 
 CLI_MULTI_OPTIONS = {
     # dest: [{option_strings}, ...]
     "newlines": [
-        {"--newlines", "--line-endings"},
+        {"--newlines"},
         {"-L", "--linux"},
         {"-N", "--native"},
         {"-M", "--microsoft"},
@@ -120,8 +123,6 @@ NEWLINE_ARGS_LINUX = [
     ["-L"],
     ["--newlines=linux"],
     ["--newlines", "linux"],
-    ["--line-endings=linux"],
-    ["--line-endings", "linux"],
     ["--newlines", "macos"],
     ["--newlines", "unix"],
 ]
@@ -135,8 +136,6 @@ NEWLINE_ARGS_MICROSOFT = [
     ["-M"],
     ["--newlines=microsoft"],
     ["--newlines", "microsoft"],
-    ["--line-endings=microsoft"],
-    ["--line-endings", "microsoft"],
     ["--newlines", "dos"],
     ["--newlines", "msft"],
     ["--newlines", "windows"],
@@ -493,15 +492,15 @@ class TestJsonIndent(unittest.TestCase):
                 self.assertEqual(text, expected_json_text)
 
     def test_JSI_200_check_program_args(self):
-        program_args = ji._check_program_args(DUMMY_PROGRAM_ARGS)
+        (_prog, program_args) = ji._check_program_args(DUMMY_PROGRAM_ARGS)
         self.assertListEqual(program_args, DUMMY_PROGRAM_ARGS)
 
         sys.argv = [DUMMY_PROGRAM_NAME] + DUMMY_PROGRAM_ARGS
-        program_args = ji._check_program_args(tuple())
+        (_prog, program_args) = ji._check_program_args(tuple())
         self.assertListEqual(program_args, DUMMY_PROGRAM_ARGS)
 
     def test_JSI_210_setup_argparser(self):
-        argparser = ji._setup_argparser()
+        argparser = ji._setup_argparser("prog")
         self.assertIsInstance(argparser, argparse.ArgumentParser)
         self.assertGreater(len(argparser.description), 0)
         for action in argparser._actions:
