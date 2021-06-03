@@ -310,7 +310,9 @@ def _setup_argparser():
         metavar="INPUTFILE",
         help="input file[s], or '-' for stdin (default: stdin)",
     )
-    argp.add_argument(
+
+    file_group = argp.add_argument_group(title="file-handling options")
+    file_group.add_argument(
         "-o",
         "--output",
         action="store",
@@ -322,7 +324,7 @@ def _setup_argparser():
             "conflicts with '--inplace'"
         ),
     )
-    argp.add_argument(
+    file_group.add_argument(
         "-I",
         "--inplace",
         "--in-place",
@@ -332,8 +334,15 @@ def _setup_argparser():
             default_inplace
         ),
     )
-    diff_group = argp.add_mutually_exclusive_group()
-    diff_group.add_argument(
+    file_group.add_argument(
+        "--pre-commit",
+        action="store_true",
+        help="Shortcut for '--inplace --changed'",
+    )
+
+    diff_group = argp.add_argument_group(title="diff options")
+    diff_mutex_group = diff_group.add_mutually_exclusive_group()
+    diff_mutex_group.add_argument(
         "-C",
         "--changed",
         "--show-changed",
@@ -342,7 +351,7 @@ def _setup_argparser():
         default=False,
         help="when used with '--inplace', note when a file has changed",
     )
-    diff_group.add_argument(
+    diff_mutex_group.add_argument(
         "-D",
         "--diff",
         "--show-diff",
@@ -351,17 +360,18 @@ def _setup_argparser():
         default=False,
         help="when used with '--inplace', show differences when a file has changed",
     )
-    newlines_group = argp.add_mutually_exclusive_group()
-    newlines_group.add_argument(
+
+    newlines_group = argp.add_argument_group(title="newline options")
+    newlines_mutex_group = newlines_group.add_mutually_exclusive_group()
+    newlines_mutex_group.add_argument(
         "--newlines",
-        "--line-endings",
         dest="newlines",
         action="store",
         choices=ALL_NEWLINE_FORMATS,
         default=default_newlines,
         help="newline format (default: {})".format(default_newlines),
     )
-    newlines_group.add_argument(
+    newlines_mutex_group.add_argument(
         "-L",
         "--linux",
         dest="newlines",
@@ -369,7 +379,7 @@ def _setup_argparser():
         const=NEWLINE_FORMAT_LINUX,
         help="same as '--newlines {}'".format(NEWLINE_FORMAT_LINUX),
     )
-    newlines_group.add_argument(
+    newlines_mutex_group.add_argument(
         "-M",
         "--microsoft",
         dest="newlines",
@@ -377,7 +387,7 @@ def _setup_argparser():
         const=NEWLINE_FORMAT_MICROSOFT,
         help="same as '--newlines {}'".format(NEWLINE_FORMAT_MICROSOFT),
     )
-    newlines_group.add_argument(
+    newlines_mutex_group.add_argument(
         "-N",
         "--native",
         dest="newlines",
@@ -385,7 +395,10 @@ def _setup_argparser():
         const=NEWLINE_FORMAT_NATIVE,
         help="same as '--newlines {}'".format(NEWLINE_FORMAT_NATIVE),
     )
-    argp.add_argument(
+
+    json_group = argp.add_argument_group(title="JSON options")
+    json_mutex_group = json_group.add_mutually_exclusive_group()
+    json_mutex_group.add_argument(
         "-c",
         "--compact",
         action="store_true",
@@ -394,7 +407,7 @@ def _setup_argparser():
             default_compact
         ),
     )
-    argp.add_argument(
+    json_mutex_group.add_argument(
         "-n",
         "--indent",
         action="store",
@@ -403,18 +416,14 @@ def _setup_argparser():
             default_indent
         ),
     )
-    argp.add_argument(
+    json_mutex_group.add_argument(
         "-s",
         "--sort-keys",
         action="store_true",
         default=default_sort,
         help="sort output alphabetically by key (default: same order as read)",
     )
-    argp.add_argument(
-        "--pre-commit",
-        action="store_true",
-        help="Shortcut for '--inplace --changed'",
-    )
+
     argp.add_argument(
         "--debug",
         action="store_true",
@@ -422,6 +431,7 @@ def _setup_argparser():
         help="turn on debug messages (default: {})".format(default_debug),
     )
     argp.add_argument("-V", "--version", action="version", version=get_version())
+
     return argp
 
 
