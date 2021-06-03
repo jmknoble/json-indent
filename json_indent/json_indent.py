@@ -399,8 +399,7 @@ def _setup_argparser(prog):
     )
 
     json_group = argp.add_argument_group(title="JSON options")
-    json_mutex_group = json_group.add_mutually_exclusive_group()
-    json_mutex_group.add_argument(
+    json_group.add_argument(
         "-c",
         "--compact",
         action="store_true",
@@ -409,7 +408,7 @@ def _setup_argparser(prog):
             default_compact
         ),
     )
-    json_mutex_group.add_argument(
+    json_group.add_argument(
         "-n",
         "--indent",
         action="store",
@@ -418,7 +417,7 @@ def _setup_argparser(prog):
             default_indent
         ),
     )
-    json_mutex_group.add_argument(
+    json_group.add_argument(
         "-s",
         "--sort-keys",
         action="store_true",
