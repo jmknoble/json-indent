@@ -58,6 +58,10 @@ then:
 
     python setup.py install
 
+You can create and install with one command using [python-venv][]:
+
+    python-venv create -t venv -r source
+
 
 ## How to Use
 
@@ -214,6 +218,7 @@ vmap <Leader>JS <Leader>js
 
 
  [Python]: https://www.python.org/
+ [python-venv]: https://github.com/jmknoble/python-venv
  [virtualenv]: https://virtualenv.pypa.io/en/latest/
  [venv]: https://docs.python.org/3/library/venv.html
  [conda]: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
