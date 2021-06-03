@@ -293,7 +293,7 @@ def _compute_diff(filename, input_text, output_text, context_lines=DIFF_CONTEXT_
     )
 
 
-def _setup_argparser():
+def _setup_argparser(prog):
     default_indent = 2
     default_inplace = False
     default_newlines = NEWLINE_FORMAT_NATIVE
@@ -426,7 +426,7 @@ def _setup_argparser():
         help="sort output alphabetically by key (default: same order as read)",
     )
 
-    completion_group = argp.add_argument_group(title="shell completion options")
+    completion_group = argp.add_argument_group(title="autocompletion options")
     completion_group.add_argument(
         "--completion-help",
         action="store_true",
@@ -444,7 +444,7 @@ def _setup_argparser():
         default=default_debug,
         help="turn on debug messages (default: {})".format(default_debug),
     )
-    argp.add_argument("-V", "--version", action="version", version=get_version())
+    argp.add_argument("-V", "--version", action="version", version=get_version(prog))
 
     return argp
 
@@ -562,7 +562,7 @@ def _compose_kwargs(cli_args):
 def cli(*program_args):
     """Process command-line."""
     (prog, program_args) = _check_program_args(program_args)
-    argparser = _setup_argparser()
+    argparser = _setup_argparser(prog)
     argcomplete.autocomplete(argparser)
     cli_args = argparser.parse_args(program_args)
 
