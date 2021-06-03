@@ -28,7 +28,7 @@ pylint:
     - useless-object-inheritance
   options:
     max-args: 10
-    max-locals: 15
+    max-locals: 16
     max-returns: 6
     max-branches: 15
     max-statements: 60

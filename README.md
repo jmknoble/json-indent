@@ -31,6 +31,7 @@ JSON, but it has no built-in [pre-commit][] hook).
 - [Installing](#installing)
 - [How to Use](#how-to-use)
     - [Quickstart](#quickstart)
+- [Command-line Autocompletion](#command-line-autocompletion)
 - [Advanced Topics](#advanced-topics)
     - [Pre-Commit Hook](#pre-commit-hook)
     - [Integration with Vim](#integration-with-vim)
@@ -110,6 +111,17 @@ See the command-line help for more options, including:
 - Indent size
 - "Compact" mode
 - Key sorting
+
+
+## Command-line Autocompletion
+
+**json-indent** provides command-line [autocompletion][] for the [Bash][]
+command-line shell and compatible shells, using the
+[argcomplete][argcomplete-pypi] Python package.
+
+For instructions on how to enable completion:
+
+    python-venv completion
 
 
 ## Advanced Topics
@@ -206,6 +218,7 @@ vmap <Leader>JS <Leader>js
     - [Virtual environments with venv][venv]
     - [Virtual environments with Anaconda][conda]
     - [How to Run Your Python Scripts][run-python-scripts]
+    - argcomplete on [PyPI][argcomplete-pypi] and [GitHub][argcomplete-github]
 - [pre-commit][]
 - [Opinionated Autoformatting][]:
     - [Black][]
@@ -223,6 +236,11 @@ vmap <Leader>JS <Leader>js
  [venv]: https://docs.python.org/3/library/venv.html
  [conda]: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
  [run-python-scripts]: https://realpython.com/run-python-scripts/
+
+ [argcomplete-pypi]: https://pypi.org/project/argcomplete/
+ [argcomplete-github]: https://github.com/kislyuk/argcomplete
+ [autocompletion]: https://en.wikipedia.org/wiki/Autocomplete
+ [Bash]: https://en.wikipedia.org/wiki/Bash_(Unix_shell)
 
  [pre-commit]: https://pre-commit.com/
 

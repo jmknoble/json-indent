@@ -12,7 +12,9 @@ import logging
 import os.path
 import sys
 
-from json_indent import get_version
+import argcomplete
+
+from json_indent import completion, get_version
 from json_indent.iofile import TextIOFile
 from json_indent.util import is_string, pop_with_default, to_unicode
 
@@ -424,6 +426,18 @@ def _setup_argparser():
         help="sort output alphabetically by key (default: same order as read)",
     )
 
+    completion_group = argp.add_argument_group(title="shell completion options")
+    completion_group.add_argument(
+        "--completion-help",
+        action="store_true",
+        help="Print instructions for enabling shell command-line autocompletion",
+    )
+    completion_group.add_argument(
+        "--bash-completion",
+        action="store_true",
+        help="Print autocompletion code for Bash-compatible shells to evaluate",
+    )
+
     argp.add_argument(
         "--debug",
         action="store_true",
@@ -477,6 +491,17 @@ def _check_input_and_output_filenames(cli_args):
                 )
 
 
+def _check_completion_args(cli_args):
+    return any([cli_args.completion_help, cli_args.bash_completion])
+
+
+def _do_completion(cli_args, prog):
+    if cli_args.completion_help:
+        print(completion.get_instructions(prog, ["--bash-completion"]))
+    elif cli_args.bash_completion:
+        print(completion.get_commands(prog))
+
+
 def _check_pre_commit_args(cli_args):
     if not cli_args.pre_commit:
         return
@@ -505,7 +530,7 @@ def _check_program_args(program_args):
         logger.setLevel(logging.DEBUG)
         logger.debug("Called with: {args}".format(args=[program] + program_args))
 
-    return program_args
+    return (program, program_args)
 
 
 def _compose_kwargs(cli_args):
@@ -536,9 +561,15 @@ def _compose_kwargs(cli_args):
 
 def cli(*program_args):
     """Process command-line."""
-    program_args = _check_program_args(program_args)
+    (prog, program_args) = _check_program_args(program_args)
     argparser = _setup_argparser()
+    argcomplete.autocomplete(argparser)
     cli_args = argparser.parse_args(program_args)
+
+    if _check_completion_args(cli_args):
+        _do_completion(cli_args, prog)
+        return STATUS_OK
+
     _check_pre_commit_args(cli_args)
     _check_diff_args(cli_args)
     _check_newlines(cli_args)
