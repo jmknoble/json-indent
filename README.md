@@ -121,7 +121,7 @@ command-line shell and compatible shells, using the
 
 For instructions on how to enable completion:
 
-    python-venv completion
+    json-indent completion
 
 
 ## Advanced Topics
