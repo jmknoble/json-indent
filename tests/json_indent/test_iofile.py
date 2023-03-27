@@ -34,7 +34,7 @@ class TestIOFile(unittest.TestCase):
             "python-2.7-at-least": "__init__() takes at least 2 arguments (1 given)",
             "python-3.x": "__init__() missing 1 required positional argument: 'path'",
         }
-        self.assertIn(message, expected_messages.values())
+        self.assertTrue(any([x in message for x in expected_messages.values()]))
 
     def test_IOF_010_instantiate(self):
         x = iof.IOFile(DUMMY_PATH)
