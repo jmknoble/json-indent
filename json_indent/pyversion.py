@@ -42,7 +42,7 @@ def compare_lt(x, y):
 def version_is_at_least(v1, v2):
     """Return `True`-ish if v1 >= v2."""
     (v1, v2) = pad_version_tuples(v1, v2)
-    for (is_greater, is_equal) in zip(map(compare_gt, v1, v2), map(compare_eq, v1, v2)):
+    for is_greater, is_equal in zip(map(compare_gt, v1, v2), map(compare_eq, v1, v2)):
         if is_greater:
             return True
         if not is_equal:
@@ -53,7 +53,7 @@ def version_is_at_least(v1, v2):
 def version_is_at_most(v1, v2):
     """Return `True`-ish if v1 <= v2."""
     (v1, v2) = pad_version_tuples(v1, v2)
-    for (is_less, is_equal) in zip(map(compare_lt, v1, v2), map(compare_eq, v1, v2)):
+    for is_less, is_equal in zip(map(compare_lt, v1, v2), map(compare_eq, v1, v2)):
         if is_less:
             return True
         if not is_equal:

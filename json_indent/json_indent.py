@@ -483,8 +483,8 @@ def _check_input_and_output_filenames(cli_args):
         if cli_args.output_filename is not None:
             raise RuntimeError("output files do not make sense with '--inplace'")
 
-        for i in range(len(cli_args.input_filenames)):
-            if cli_args.input_filenames[i] == "-":
+        for input_filename in cli_args.input_filenames:
+            if input_filename == "-":
                 raise RuntimeError(
                     "reading from stdin does not make sense with '--inplace'"
                 )

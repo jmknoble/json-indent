@@ -1,10 +1,8 @@
-# fmt: off
+import logging
 
-__author__ = 'Jim Knoble'
-__email__ = 'jmknoble@pobox.com'
-__version__ = '2.6.4'
+logger = logging.getLogger(__name__)
 
-# fmt: on
+__version__ = "2.6.4"
 
 
 def get_version(thing=None):

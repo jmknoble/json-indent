@@ -46,7 +46,7 @@ def main():
         print(CONFIG_FOUND_MESSAGE, file=sys.stderr)
         status = print_sample_config()
     else:
-        with open(CONFIG, "w") as outfile:
+        with open(CONFIG, "w", encoding="utf-8") as outfile:
             status = print_sample_config(outfile=outfile)
 
     sys.exit(status)

@@ -122,7 +122,8 @@ class IOFile(object):
             self.file = (
                 self._get_io_property(purpose, "stdio_stream")
                 if self.path == "-"
-                else open(self.path, target_mode)
+                # pylint: disable=consider-using-with
+                else open(self.path, target_mode, encoding="utf-8")
             )
             self.mode = target_mode
         return self.file
@@ -202,8 +203,12 @@ class TextIOFile(IOFile):
             else:
                 fileish = self.path
                 closefd = True
-            self.file = io.open(
-                fileish, mode=target_mode, newline=newline, closefd=closefd
+            self.file = io.open(  # pylint: disable=consider-using-with
+                fileish,
+                mode=target_mode,
+                newline=newline,
+                closefd=closefd,
+                encoding="utf-8",
             )
             self.mode = target_mode
         return self.file

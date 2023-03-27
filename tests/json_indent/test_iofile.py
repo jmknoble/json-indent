@@ -60,7 +60,7 @@ class TestIOFile(unittest.TestCase):
 
     def test_IOF_110_get_io_property(self):
         x = iof.IOFile(DUMMY_PATH)
-        for (purpose, mode, stream) in [
+        for purpose, mode, stream in [
             ("input", "r", sys.stdin),
             ("output", "w", sys.stdout),
         ]:
@@ -80,7 +80,7 @@ class TestIOFile(unittest.TestCase):
             x._get_io_property("output", DUMMY_IO_PROPERTY)
 
     def test_IOF_120_close(self):
-        for (path, openfile, should_be_closed) in [
+        for path, openfile, should_be_closed in [
             (self.testfile.name, open(self.testfile.name), True),
             ("-", sys.stdin, False),
             ("-", sys.stdout, False),
@@ -98,7 +98,7 @@ class TestIOFile(unittest.TestCase):
     def test_IOF_130_open_for_purpose(self):
         x = iof.IOFile(self.testfile.name)
 
-        for (purpose, expected_mode) in [("input", "r"), ("output", "w")]:
+        for purpose, expected_mode in [("input", "r"), ("output", "w")]:
             f = x._open_for_purpose(purpose)
             self.assertEqual(x.mode, expected_mode)
             self.assertIs(f, x.file)
@@ -112,7 +112,7 @@ class TestIOFile(unittest.TestCase):
 
     def test_IOF_140_open_stdio_streams(self):
         x = iof.IOFile("-")
-        for (purpose, expected_mode, expected_stream) in [
+        for purpose, expected_mode, expected_stream in [
             ("input", "r", sys.stdin),
             ("output", "w", sys.stdout),
         ]:

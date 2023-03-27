@@ -62,7 +62,7 @@ class TestJsonIndentPyVersion(unittest.TestCase):
         self.assertTupleEqual(pv.get_python_version(), sys_ver)
 
     def test_JPV_010_pad_version_tuples(self):
-        for (v1, v2, expected_v1, expected_v2) in [
+        for v1, v2, expected_v1, expected_v2 in [
             ((), (4, 5, 6), [0, 0, 0], [4, 5, 6]),
             ((1,), (4, 5, 6), [1, 0, 0], [4, 5, 6]),
             ((1, 2), (4, 5, 6), [1, 2, 0], [4, 5, 6]),
@@ -74,7 +74,7 @@ class TestJsonIndentPyVersion(unittest.TestCase):
             self.assertListEqual(p2, expected_v2)
 
     def test_JPV_020_compare_eq(self):
-        for (x, y, expected) in [
+        for x, y, expected in [
             (0, 0, True),
             (1, 0, False),
             (0, 1, False),
@@ -86,7 +86,7 @@ class TestJsonIndentPyVersion(unittest.TestCase):
             self.assertEqual(pv.compare_eq(x, y), expected)
 
     def test_JPV_030_compare_gt(self):
-        for (x, y, expected) in [
+        for x, y, expected in [
             (0, 0, False),
             (1, 0, True),
             (0, 1, False),
@@ -98,7 +98,7 @@ class TestJsonIndentPyVersion(unittest.TestCase):
             self.assertEqual(pv.compare_gt(x, y), expected)
 
     def test_JPV_040_compare_lt(self):
-        for (x, y, expected) in [
+        for x, y, expected in [
             (0, 0, False),
             (1, 0, False),
             (0, 1, True),
@@ -110,56 +110,56 @@ class TestJsonIndentPyVersion(unittest.TestCase):
             self.assertEqual(pv.compare_lt(x, y), expected)
 
     def test_JPV_100_version_is_at_least_equal(self):
-        for (v1, v2) in EQUAL_VERSIONS:
+        for v1, v2 in EQUAL_VERSIONS:
             self.assertTrue(pv.version_is_at_least(v1, v2))
             self.assertTrue(pv.version_is_greater_or_equal(v1, v2))
             self.assertTrue(pv.version_is_at_least(v2, v1))
             self.assertTrue(pv.version_is_greater_or_equal(v2, v1))
 
     def test_JPV_101_version_is_at_least_unequal(self):
-        for (v1, v2) in UNEQUAL_VERSIONS:
+        for v1, v2 in UNEQUAL_VERSIONS:
             self.assertTrue(pv.version_is_at_least(v1, v2))
             self.assertTrue(pv.version_is_greater_or_equal(v1, v2))
             self.assertFalse(pv.version_is_at_least(v2, v1))
             self.assertFalse(pv.version_is_greater_or_equal(v2, v1))
 
     def test_JPV_110_version_is_at_most_equal(self):
-        for (v1, v2) in EQUAL_VERSIONS:
+        for v1, v2 in EQUAL_VERSIONS:
             self.assertTrue(pv.version_is_at_most(v1, v2))
             self.assertTrue(pv.version_is_less_or_equal(v1, v2))
             self.assertTrue(pv.version_is_at_most(v2, v1))
             self.assertTrue(pv.version_is_less_or_equal(v2, v1))
 
     def test_JPV_111_version_is_at_least_unequal(self):
-        for (v1, v2) in UNEQUAL_VERSIONS:
+        for v1, v2 in UNEQUAL_VERSIONS:
             self.assertTrue(pv.version_is_at_most(v2, v1))
             self.assertTrue(pv.version_is_less_or_equal(v2, v1))
             self.assertFalse(pv.version_is_at_most(v1, v2))
             self.assertFalse(pv.version_is_less_or_equal(v1, v2))
 
     def test_JPV_120_version_is_greater_than_equal(self):
-        for (v1, v2) in EQUAL_VERSIONS:
+        for v1, v2 in EQUAL_VERSIONS:
             self.assertFalse(pv.version_is_greater_than(v1, v2))
             self.assertFalse(pv.version_is_greater_than(v2, v1))
 
     def test_JPV_121_version_is_greater_than_unequal(self):
-        for (v1, v2) in UNEQUAL_VERSIONS:
+        for v1, v2 in UNEQUAL_VERSIONS:
             self.assertTrue(pv.version_is_greater_than(v1, v2))
             self.assertFalse(pv.version_is_greater_than(v2, v1))
 
     def test_JPV_130_version_is_less_than_equal(self):
-        for (v1, v2) in EQUAL_VERSIONS:
+        for v1, v2 in EQUAL_VERSIONS:
             self.assertFalse(pv.version_is_less_than(v1, v2))
             self.assertFalse(pv.version_is_less_than(v2, v1))
 
     def test_JPV_131_version_is_less_than_unequal(self):
-        for (v1, v2) in UNEQUAL_VERSIONS:
+        for v1, v2 in UNEQUAL_VERSIONS:
             self.assertTrue(pv.version_is_less_than(v2, v1))
             self.assertFalse(pv.version_is_less_than(v1, v2))
 
     def test_JPV_200_python_version_is_at_least(self):
         vi = sys.version_info
-        for (major, minor, micro, expected) in [
+        for major, minor, micro, expected in [
             (vi.major, vi.minor, vi.micro, True),
             (vi.major + 1, vi.minor, vi.micro, False),
             (vi.major, vi.minor + 1, vi.micro, False),
@@ -182,7 +182,7 @@ class TestJsonIndentPyVersion(unittest.TestCase):
 
     def test_JPV_210_python_version_is_at_most(self):
         vi = sys.version_info
-        for (major, minor, micro, expected) in [
+        for major, minor, micro, expected in [
             (vi.major, vi.minor, vi.micro, True),
             (vi.major + 1, vi.minor, vi.micro, True),
             (vi.major, vi.minor + 1, vi.micro, True),
@@ -203,7 +203,7 @@ class TestJsonIndentPyVersion(unittest.TestCase):
 
     def test_JPV_220_python_version_is_greater_than(self):
         vi = sys.version_info
-        for (major, minor, micro, expected) in [
+        for major, minor, micro, expected in [
             (vi.major, vi.minor, vi.micro, False),
             (vi.major + 1, vi.minor, vi.micro, False),
             (vi.major, vi.minor + 1, vi.micro, False),
@@ -219,7 +219,7 @@ class TestJsonIndentPyVersion(unittest.TestCase):
 
     def test_JPV_230_python_version_is_less_than(self):
         vi = sys.version_info
-        for (major, minor, micro, expected) in [
+        for major, minor, micro, expected in [
             (vi.major, vi.minor, vi.micro, False),
             (vi.major + 1, vi.minor, vi.micro, True),
             (vi.major, vi.minor + 1, vi.micro, True),

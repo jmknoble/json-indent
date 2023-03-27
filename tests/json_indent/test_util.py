@@ -66,7 +66,7 @@ class TestJsonIndentUtil(unittest.TestCase):
             # fmt: on
 
     def test_JIU_200_is_string(self):
-        for (thing, expected) in [
+        for thing, expected in [
             ("x", True),
             (1, False),
             (1.0, False),
@@ -80,7 +80,7 @@ class TestJsonIndentUtil(unittest.TestCase):
 
     def test_JIU_201_is_string_unicode(self):
         if pv.python_version_is_less_than(3):
-            for (thing, expected) in [
+            for thing, expected in [
                 # fmt: off
                 (u"x", True),
                 # fmt: on
@@ -89,7 +89,7 @@ class TestJsonIndentUtil(unittest.TestCase):
                 self.assertEqual(result, expected)
 
     def test_JIU_300_padded(self):
-        for (original, n, expected) in [
+        for original, n, expected in [
             ([], 2, [None, None]),
             ([1], 2, [1, None]),
             ([1, 2], 2, [1, 2]),
@@ -99,7 +99,7 @@ class TestJsonIndentUtil(unittest.TestCase):
             self.assertListEqual(x, expected)
 
     def test_JIU_300_padded_value(self):
-        for (original, n, value, expected) in [
+        for original, n, value, expected in [
             ([], 2, 0, [0, 0]),
             ([1], 2, 0, [1, 0]),
             ([1, 2], 2, 0, [1, 2]),

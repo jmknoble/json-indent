@@ -26,6 +26,9 @@ pylint:
     - len-as-condition
     - logging-fstring-interpolation
     - useless-object-inheritance
+    - consider-using-f-string
+    - raise-missing-from
+    - super-with-arguments
   options:
     max-args: 10
     max-locals: 16

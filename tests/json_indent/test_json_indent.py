@@ -159,7 +159,7 @@ def deep_convert_to_plain_dict(an_odict):
         dictionaries converted to `dict`:py:class:
     """
     a_dict = {}
-    for (key, value) in an_odict.items():
+    for key, value in an_odict.items():
         if type(value) is collections.OrderedDict:
             a_dict[key] = deep_convert_to_plain_dict(value)
         else:
@@ -252,7 +252,7 @@ class TestJsonIndent(unittest.TestCase):
                 json_data, DUMMY_JSON_DATA_ORDERED_DICT, ordered=True
             )
 
-        for (ordered, expected_data) in [
+        for ordered, expected_data in [
             (True, DUMMY_JSON_DATA_ORDERED_DICT),
             (False, DUMMY_JSON_DATA_DICT),
         ]:
@@ -274,7 +274,7 @@ class TestJsonIndent(unittest.TestCase):
             )
             self.assertEqual(json_text, DUMMY_JSON_TEXT_UNFORMATTED)
 
-        for (ordered, expected_data) in [
+        for ordered, expected_data in [
             (True, DUMMY_JSON_DATA_ORDERED_DICT),
             (False, DUMMY_JSON_DATA_DICT),
         ]:
@@ -302,7 +302,7 @@ class TestJsonIndent(unittest.TestCase):
             )
             self.assertEqual(json_text, DUMMY_JSON_TEXT_UNFORMATTED)
 
-        for (ordered, expected_data) in [
+        for ordered, expected_data in [
             (True, DUMMY_JSON_DATA_ORDERED_DICT),
             (False, DUMMY_JSON_DATA_DICT),
         ]:
@@ -320,7 +320,7 @@ class TestJsonIndent(unittest.TestCase):
         json_data = ji.load_json_text(json_text)
         self.assertDictishEqual(json_data, DUMMY_JSON_DATA_ORDERED_DICT, ordered=True)
 
-        for (ordered, expected_data) in [
+        for ordered, expected_data in [
             (True, DUMMY_JSON_DATA_ORDERED_DICT),
             (False, DUMMY_JSON_DATA_DICT),
         ]:
@@ -335,7 +335,7 @@ class TestJsonIndent(unittest.TestCase):
             # Ensure file exists and is empty
             pass
 
-        for (kwargs, json_data, expected_json_text) in [
+        for kwargs, json_data, expected_json_text in [
             (PLAIN_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
             (SORTED_KWARGS, DUMMY_JSON_DATA_DICT, DUMMY_JSON_TEXT_SORTED),
             (COMPACT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_COMPACT),
@@ -357,7 +357,7 @@ class TestJsonIndent(unittest.TestCase):
             # Ensure file exists and is empty
             pass
 
-        for (kwargs, json_data, expected_json_text) in [
+        for kwargs, json_data, expected_json_text in [
             (INDENT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
         ]:
             if pv.python_version_is_less_than(3, 2):
@@ -391,7 +391,7 @@ class TestJsonIndent(unittest.TestCase):
                     self.assertEqual(f.read(), expected_json_text)
 
     def test_JSI_112_dump_json_to_text(self):
-        for (kwargs, json_data, expected_json_text) in [
+        for kwargs, json_data, expected_json_text in [
             (PLAIN_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
             (SORTED_KWARGS, DUMMY_JSON_DATA_DICT, DUMMY_JSON_TEXT_SORTED),
             (COMPACT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_COMPACT),
@@ -403,7 +403,7 @@ class TestJsonIndent(unittest.TestCase):
             self.assertEqual(text, expected_json_text)
 
     def test_JSI_113_dump_json_to_text_indent_string(self):
-        for (kwargs, json_data, expected_json_text) in [
+        for kwargs, json_data, expected_json_text in [
             (INDENT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
         ]:
             if pv.python_version_is_less_than(3, 2):
@@ -433,7 +433,7 @@ class TestJsonIndent(unittest.TestCase):
             # Ensure file exists and is empty
             pass
 
-        for (kwargs, json_data, expected_json_text) in [
+        for kwargs, json_data, expected_json_text in [
             (PLAIN_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
             (SORTED_KWARGS, DUMMY_JSON_DATA_DICT, DUMMY_JSON_TEXT_SORTED),
             (COMPACT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_COMPACT),
@@ -449,7 +449,7 @@ class TestJsonIndent(unittest.TestCase):
             # Ensure file exists and is empty
             pass
 
-        for (kwargs, json_data, expected_json_text) in [
+        for kwargs, json_data, expected_json_text in [
             (INDENT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
         ]:
             if pv.python_version_is_less_than(3, 2):
@@ -468,7 +468,7 @@ class TestJsonIndent(unittest.TestCase):
                     self.assertEqual(f.read(), expected_json_text)
 
     def test_JSI_116_dump_json_text(self):
-        for (kwargs, json_data, expected_json_text) in [
+        for kwargs, json_data, expected_json_text in [
             (PLAIN_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
             (SORTED_KWARGS, DUMMY_JSON_DATA_DICT, DUMMY_JSON_TEXT_SORTED),
             (COMPACT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_COMPACT),
@@ -477,7 +477,7 @@ class TestJsonIndent(unittest.TestCase):
             self.assertEqual(text, expected_json_text)
 
     def test_JSI_117_dump_json_text_indent_string(self):
-        for (kwargs, json_data, expected_json_text) in [
+        for kwargs, json_data, expected_json_text in [
             (INDENT_KWARGS, DUMMY_JSON_DATA_ORDERED_DICT, DUMMY_JSON_TEXT_FORMATTED),
         ]:
             if pv.python_version_is_less_than(3, 2):
@@ -521,7 +521,7 @@ class TestJsonIndent(unittest.TestCase):
                 self.assertEqual(action.nargs, CLI_ARGUMENTS[action.dest])
 
     def test_JSI_220_normalize_path(self):
-        for (path, expected_path) in DUMMY_PATHS.items():
+        for path, expected_path in DUMMY_PATHS.items():
             test_path = ji._normalize_path(path)
             self.assertEqual(test_path, expected_path)
 
@@ -600,7 +600,7 @@ class TestJsonIndent(unittest.TestCase):
         )
 
     def test_JSI_300_cli(self):
-        for (test_args, expected_json_text) in [
+        for test_args, expected_json_text in [
             (ARGS_PLAIN, DUMMY_JSON_TEXT_FORMATTED),
             (ARGS_SORTED, DUMMY_JSON_TEXT_SORTED),
             (ARGS_COMPACT, DUMMY_JSON_TEXT_COMPACT),
@@ -617,7 +617,7 @@ class TestJsonIndent(unittest.TestCase):
                 self.assertEqual(f.read(), expected_json_text)
 
     def test_JSI_301_cli_indent_string(self):
-        for (test_args, expected_json_text) in [
+        for test_args, expected_json_text in [
             (ARGS_INDENT, DUMMY_JSON_TEXT_FORMATTED),
         ]:
             with open(self.infile.name, "w") as f:
@@ -640,7 +640,7 @@ class TestJsonIndent(unittest.TestCase):
                     self.assertEqual(f.read(), expected_json_text)
 
     def test_JSI_302_cli_inplace(self):
-        for (test_args, expected_json_text) in [
+        for test_args, expected_json_text in [
             (ARGS_PLAIN, DUMMY_JSON_TEXT_FORMATTED),
             (ARGS_SORTED, DUMMY_JSON_TEXT_SORTED),
             (ARGS_COMPACT, DUMMY_JSON_TEXT_COMPACT),
@@ -653,7 +653,7 @@ class TestJsonIndent(unittest.TestCase):
                 self.assertEqual(f.read(), expected_json_text)
 
     def test_JSI_303_cli_inplace_indent_string(self):
-        for (test_args, expected_json_text) in [
+        for test_args, expected_json_text in [
             (ARGS_INDENT, DUMMY_JSON_TEXT_FORMATTED),
         ]:
             with open(self.infile.name, "w") as f:
@@ -672,7 +672,7 @@ class TestJsonIndent(unittest.TestCase):
                     self.assertEqual(f.read(), expected_json_text)
 
     def test_JSI_304_cli_newlines(self):
-        for (arg_set, expected_json_text) in [
+        for arg_set, expected_json_text in [
             (NEWLINE_ARGS_LINUX, DUMMY_JSON_TEXT_FORMATTED),
             (NEWLINE_ARGS_NATIVE, DUMMY_JSON_TEXT_FORMATTED.replace("\n", os.linesep)),
             (NEWLINE_ARGS_MICROSOFT, DUMMY_JSON_TEXT_FORMATTED.replace("\n", "\r\n")),
