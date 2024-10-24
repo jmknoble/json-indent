@@ -1,6 +1,6 @@
 [project]
 name = "json-indent"
-version = "2.7.0"
+version = "2.7.1"
 description = "Simple Python-based JSON parser/indenter/formatter"
 readme = "README.md"
 authors = [
@@ -113,7 +113,7 @@ max-statements = 60
 
 
 [tool.bumpver]
-current_version = "v2.7.0"
+current_version = "v2.7.1"
 version_pattern = "vMAJOR.MINOR.PATCH[PYTAGNUM]"
 commit_message = "bump version {old_version} -> {new_version}"
 tag_message = "{new_version}"
