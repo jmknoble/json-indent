@@ -637,8 +637,8 @@ def cli(*program_args):
 
 def main(*program_args):
     """Provide main functionality."""
-    sys.exit(cli(*program_args))
+    return cli(*program_args)
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
