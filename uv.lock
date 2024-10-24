@@ -184,7 +184,7 @@ wheels = [
 
 [[package]]
 name = "json-indent"
-version = "2.6.5"
+version = "2.6.99"
 source = { editable = "." }
 dependencies = [
     { name = "argcomplete" },
