@@ -130,7 +130,7 @@ class TestJsonIndentPyVersion(unittest.TestCase):
             self.assertTrue(pv.version_is_at_most(v2, v1))
             self.assertTrue(pv.version_is_less_or_equal(v2, v1))
 
-    def test_JPV_111_version_is_at_least_unequal(self):
+    def test_JPV_111_version_is_at_most_unequal(self):
         for v1, v2 in UNEQUAL_VERSIONS:
             self.assertTrue(pv.version_is_at_most(v2, v1))
             self.assertTrue(pv.version_is_less_or_equal(v2, v1))
