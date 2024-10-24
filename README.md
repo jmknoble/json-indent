@@ -54,18 +54,22 @@ It is recommended to install **json-indent** either:
 - In its own virtual environment (for example, using [uv][]), or
 - As a [pre-commit hook](#pre-commit-hook)
 
-To install with `uv`, clone this git repo, change directory to the repo, and:
+To install with `uv`:
 
-    uv tool install -e .
+    uv tool install json-indent
 
 
 ## How to Use
 
 For a summary of all the available options:
 
+    uv tool run json-indent --help
+
+Or, with the `uvx` shortcut:
+
     uvx json-indent --help
 
-or:
+Or, if you prefer to call the script directly:
 
     /path/to/json-indent --help
 
