@@ -80,13 +80,13 @@ class TestJsonIndentUtil(unittest.TestCase):
 
     def test_JIU_201_is_string_unicode(self):
         if pv.python_version_is_less_than(3):
+            # fmt: off
             for thing, expected in [
-                # fmt: off
                 (u"x", True),
-                # fmt: on
             ]:
                 result = jiu.is_string(thing)
                 self.assertEqual(result, expected)
+            # fmt: on
 
     def test_JIU_300_padded(self):
         for original, n, expected in [

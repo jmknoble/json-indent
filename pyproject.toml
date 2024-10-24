@@ -1,31 +1,139 @@
-[build-system]
-# https://setuptools.pypa.io/en/latest/userguide/index.html
-requires = [
-    "setuptools>=51",
-    "wheel"
+[project]
+name = "json-indent"
+version = "2.6.5"
+description = "Simple Python-based JSON parser/indenter/formatter"
+readme = "README.md"
+authors = [
+    { name = "jmknoble", email = "jmknoble@pobox.com" }
 ]
-build-backend = "setuptools.build_meta"
+license = { file = "LICENSE" }
+keywords = [
+    "cli",
+    "indent",
+    "json",
+    "pre-commit",
+    "reformat",
+]
+classifiers = [  # https://pypi.org/classifiers/
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Environment :: Other Environment",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: File Formats :: JSON",
+    "Topic :: Software Development",
+    "Topic :: Utilities",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "argcomplete>=1.12.3",
+]
 
-[tool.black]
+[project.urls]
+Repository = "https://github.com/jmknoble/json-indent"
 
-# https://github.com/psf/black
+[project.scripts]
+json-indent = "json_indent.json_indent:main"
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    ".[!.]*",
+    "DEVELOPING.md",
+    "build",
+    "dist",
+    "docs",
+    "examples",
+    "tests",
+    "tests.*",
+    "util",
+    "*.egg-info",
+]
+
+
+[tool.uv]
+dev-dependencies = [
+    "bumpver>=2023.1129",
+    "pre-commit-tool>=0.1.4",
+    "ruff>=0.7.0",
+    "sphinx>=3.0.4,<4",
+]
+
+
+[tool.ruff]
 line-length = 88
-target-version = ['py36']
-include = '\.pyi?$'
-exclude = '''
-(
-  /(    # exclude a few common directories in the
-        # root of the project
-      \.eggs
-    | \.git
-    | \.hg
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | build
-    | dist
-  )/
-)
-'''
+
+[tool.ruff.lint]
+extend-select = [
+    "W",  # warnings
+    "N",  # pep8-naming
+    "I",  # isort
+    "S",  # flake8-bandit
+    "B",  # flake8-bugbear
+    "A",  # flake8-builtins
+    "YTT",  # flake8-2020
+    "PL",  # pylint
+    # "D",  # pydocstyle
+    # "UP",  # pyupgrade
+]
+ignore = [
+    "B904",  # raise-without-from-inside-except
+    "B905",  # zip-without-explicit-strict
+    "D107",  # undocumented-public-init
+    "D200",  # fits-on-one-line
+    "D413",  # blank-line-after-last-section
+    "E266",  # multiple-leading-hashes-for-block-comment
+    "N811",  # constant-imported-as-non-constant
+    "N812",  # lowercase-imported-as-non-lowercase
+    "N813",  # camelcase-imported-as-lowercase
+    "N814",  # camelcase-imported-as-constant
+]
+
+[tool.ruff.lint.isort]
+case-sensitive = true
+
+[tool.ruff.lint.pylint]
+max-args = 10
+max-branches = 15
+max-statements = 60
+# max-bool-expr = 5
+# max-locals = 15
+# max-nested-blocks = 5
+# max-positional-args = 5
+# max-public-methods = 20
+# max-returns = 6
+
+
+[tool.bumpver]
+current_version = "v2.6.5"
+version_pattern = "vMAJOR.MINOR.PATCH[PYTAGNUM]"
+commit_message = "bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+tag_scope = "default"
+pre_commit_hook = ".bumpver-pre-commit-hook.sh"
+post_commit_hook = ""
+commit = true
+tag = true
+push = true
+
+[tool.bumpver.file_patterns]
+# "README.md" = [
+#     "{version}",
+#     "{pep440_version}",
+# ]
+"pyproject.toml" = [
+    '^version = "{pep440_version}"',
+    '^current_version = "{version}"',
+]
+"src/json_indent/__init__.py" = [
+    '^__version__ = "{pep440_version}"',
+]
+
