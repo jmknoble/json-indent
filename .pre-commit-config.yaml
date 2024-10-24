@@ -7,7 +7,7 @@ default_language_version:
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v5.0.0
     hooks:
       - id: check-added-large-files
 
@@ -17,12 +17,12 @@ repos:
         args: ['--fix=no']
 
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.29.0
+    rev: v1.35.1
     hooks:
       - id: yamllint
 
   - repo: https://github.com/jmknoble/json-indent
-    rev: v2.6.4
+    rev: v2.6.5
     hooks:
       - id: json-indent
         args: ['--newlines=linux']
@@ -31,59 +31,22 @@ repos:
     rev: v0.3.0
     hooks:
       - id: markdown-toc
-        args: ['--heading-level', '1', '--skip-level', '1']
+        args: ['--heading-level', '2', '--skip-level', '1']
 
-  - repo: https://github.com/asottile/seed-isort-config
-    rev: v2.2.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version
+    rev: v0.7.0
     hooks:
-      - id: seed-isort-config
-        args:
-          - '--application-directories=hooks'
-          - '--exclude=(docs?|examples?|tests?|utils?|\{\{cookiecutter\.[^}]*\}\})/.*\.py'
+      # Emulate isort
+      - id: ruff
+        name: ruff-isort
+        alias: ruff-isort
+        args: ['--config', 'lint.select = ["I"]', '--fix']
 
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.10.1
-    hooks:
-      - id: isort
+      # Auto-format Python code
+      - id: ruff-format
+        # args: ['project-dir/']
 
-  - repo: https://github.com/psf/black
-    rev: 23.1.0
-    hooks:
-      - id: black
-        alias: black-check
-        name: black-check
-        args: ['--check']
-        stages: [manual]
-
-      - id: black
-        alias: black-diff
-        name: black-diff
-        args: ['--check', '--diff']
-        stages: [manual]
-
-      - id: black
-        alias: black-reformat
-        name: black-reformat
-        args: []
-
-  - repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
-    hooks:
-      - id: flake8
-
-  - repo: https://github.com/PyCQA/prospector
-    rev: v1.9.0
-    hooks:
-      - id: prospector
-        args: ['--profile=prospector_profile.yml']
-        # add any needed Python package requirements here
-        additional_dependencies:
-          - 'pytest>=4.6'
-          - 'argcomplete >= 1.12.3'
-
-  - repo: https://github.com/PyCQA/pydocstyle
-    rev: 6.3.0
-    hooks:
-      - id: pydocstyle
-        exclude: (__init__|setup|(docs?|examples?|tests?|utils?)/.*)\.py$
-...
+      # Run the linter
+      - id: ruff
+        # args: ['project-dir/']
