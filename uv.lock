@@ -296,11 +296,11 @@ wheels = [
 
 [[package]]
 name = "pre-commit-tool"
-version = "0.1.6"
+version = "0.1.7"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d6/01/6c2f505e596378baef203090c400a05533fe768eaf1b2ec447da94443a67/pre_commit_tool-0.1.6.tar.gz", hash = "sha256:279940bdcca4cbb162881a41714bc21cddb4a68a8212c1b8d1409d60d64b499d", size = 11467 }
+sdist = { url = "https://files.pythonhosted.org/packages/eb/b3/3cc5ec524cc55a717b3c66d78fdcfd9553938f20b4ad7ce0510727ad1fda/pre_commit_tool-0.1.7.tar.gz", hash = "sha256:1a4c62d16aa16d7b3d1043364ae740a35380f70c762e01d861c1dc1469930597", size = 10037 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d2/bb/8722a35ca48f8fd1b78001d8608364d499ad09317bc0cff434cc7f1c9de3/pre_commit_tool-0.1.6-py3-none-any.whl", hash = "sha256:f18c5b348fb5a60b1cb34517879bbb91c73d6698e7bfc1d95538002a3ac70540", size = 6332 },
+    { url = "https://files.pythonhosted.org/packages/b7/8b/b53f85ec7f7366128ff2aa35a81f7870101c38d0662615c017fc814f4577/pre_commit_tool-0.1.7-py3-none-any.whl", hash = "sha256:8a465eeece10d5ef298f6ded38ec06f96ee0895991856a629c883983b1d2aa41", size = 7062 },
 ]
 
 [[package]]
