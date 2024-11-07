@@ -22,6 +22,7 @@ This project uses:
     - [Lint and format your Python code](#lint-and-format-your-python-code)
     - [Lint YAML files](#lint-yaml-files)
     - [GitHub workflows](#github-workflows)
+    - [Unit tests](#unit-tests)
     - [Version maintenance](#version-maintenance)
 - [References](#references)
 
@@ -33,7 +34,7 @@ This project uses:
 1. Install `uv`.
 2. Install `pre-commit` and pre-commit hooks.
 3. Learn how to lint and format code on the fly.
-5. Learn how to bump the version.
+4. Learn how to bump the version.
 
 
 ## Detailed instructions
@@ -56,14 +57,16 @@ Make sure you can run `uv` when you're done:
 > - `~/.cargo/bin` (or `$HOME/.cargo/bin`)
 > - `~/.local/bin` (or `$HOME/.local/bin`)
 
+- - -
 
 ### Development tools
 
-Tools you may need for development are generally listed as "developement" dependencies in
-the `[tool.uv]` section of [pyproject.toml][].
+Tools you may need for development are generally listed as `dev` dependencies in the
+`[dependency-groups]` section of [pyproject.toml][].
 
 `uv` will automatically add those tools to the Python virtual environment it manages.
 
+- - -
 
 ### Pre-commit hooks
 
@@ -88,6 +91,7 @@ Install the configured pre-commit hooks and make sure they're up to date:
 >
 > `pre-commit` requires files to be added to a git repo in order to check them.
 
+- - -
 
 ### Lint and format your Python code
 
@@ -104,6 +108,7 @@ Ruff's linter can auto-apply "safe" fixes, if you ask it to:
 
 (This is how the `ruff-isort` pre-commit hook that sorts `import` statements works).
 
+- - -
 
 ### Lint YAML files
 
@@ -119,6 +124,7 @@ Then run it for the current directory:
 
     uvx yamllint .
 
+- - -
 
 ### GitHub workflows
 
@@ -132,6 +138,13 @@ Workflows are located in [.github/workflows/][].
 > So we do the same checks in our GitHub workflow, to make sure they've been done ... trust, but
 > verify.
 
+- - -
+
+### Unit tests
+
+See [tests/README.md][].
+
+- - -
 
 ### Version maintenance
 
@@ -199,6 +212,7 @@ More info:
  [.bumpver-pre-commit-hook.sh]: .bumpver-pre-commit-hook.sh
  [.github/workflows/]: .github/workflows/
  [pyproject.toml]: pyproject.toml
+ [tests/README.md]: tests/README.md
 
  [bumpver-src]: https://github.com/mbarkhau/bumpver
  [bumpver-pypi]: https://pypi.org/project/bumpver/

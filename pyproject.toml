@@ -40,6 +40,15 @@ Repository = "https://github.com/jmknoble/json-indent"
 [project.scripts]
 json-indent = "json_indent.json_indent:main"
 
+[dependency-groups]
+dev = [
+    "bumpver>=2023.1129",
+    "pre-commit-tool>=0.1.6",
+    "ruff>=0.7.2",
+    "sphinx>=3.0.4,<4",
+]
+
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -56,15 +65,6 @@ exclude = [
     "tests.*",
     "util",
     "*.egg-info",
-]
-
-
-[tool.uv]
-dev-dependencies = [
-    "bumpver>=2023.1129",
-    "pre-commit-tool>=0.1.4",
-    "ruff>=0.7.0",
-    "sphinx>=3.0.4,<4",
 ]
 
 
