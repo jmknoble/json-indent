@@ -135,4 +135,7 @@ push = true
 "src/json_indent/__init__.py" = [
     '^__version__ = "{pep440_version}"',
 ]
+"examples/pre-commit-config.yaml" = [
+    'rev: {version}',
+]
 

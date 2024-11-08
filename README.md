@@ -140,7 +140,7 @@ before committing to your git project.  The hook will:
     supply one).
 
 To add a hook for **json-indent** to your project, use the following YAML in
-your project's [.pre-commit-config.yaml](examples/.pre-commit-config.yaml):
+your project's [.pre-commit-config.yaml](examples/pre-commit-config.yaml):
 
 ```yaml
   - repo: https://github.com/jmknoble/json-indent
