@@ -98,9 +98,7 @@ def build(context, clean=False):
 
 
 @task(iterable=["test_name_pattern"])
-def tests(
-    context, test_name_pattern, quiet=False, failfast=False, catch=False, buffer=False
-):
+def tests(context, test_name_pattern, quiet=False, failfast=False, catch=False, buffer=False):
     """Run tests using `python3 -m unittest discover`"""
     args = []
     args.append("-q" if quiet else "-v")
@@ -113,15 +111,11 @@ def tests(
     if test_name_pattern:
         args.append("-k")
         args.extend(test_name_pattern)
-    context.run(
-        "uv run python3 -m unittest discover -s tests -t . {}".format(" ".join(args))
-    )
+    context.run("uv run python3 -m unittest discover -s tests -t . {}".format(" ".join(args)))
 
 
 @task
-def version(
-    context, bump=False, dry_run=True, go=False, patch=False, minor=False, major=False
-):
+def version(context, bump=False, dry_run=True, go=False, patch=False, minor=False, major=False):
     """Show or update this project's current version"""
     args = []
     if not bump:

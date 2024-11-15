@@ -42,9 +42,7 @@ class IOFileOpenError(IOFileError):
     def __init__(self, path, mode, purpose):
         self.mode = mode
         self.purpose = purpose
-        message = "error opening for {purpose} (mode: {mode})".format(
-            mode=self.mode, purpose=purpose
-        )
+        message = "error opening for {purpose} (mode: {mode})".format(mode=self.mode, purpose=purpose)
         super(IOFileOpenError, self).__init__(path, message)
 
 
@@ -86,9 +84,7 @@ class IOFile(object):
             - `KeyError` if `property_name` is not a recognized property name
         """
         if purpose not in self._io_properties:
-            raise ValueError(
-                "{purpose}: unrecognized IOFile purpose".format(purpose=purpose)
-            )
+            raise ValueError("{purpose}: unrecognized IOFile purpose".format(purpose=purpose))
         return self._io_properties[purpose][property_name]
 
     def _raise_open_error(self, purpose):

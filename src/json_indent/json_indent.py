@@ -78,9 +78,7 @@ class JsonParseError(ValueError):
     def __init__(self, filename, exception):
         self.filename = filename
         self.exception = exception
-        self.msg = "{filename}: {exception}".format(
-            filename=filename, exception=exception
-        )
+        self.msg = "{filename}: {exception}".format(filename=filename, exception=exception)
         super(JsonParseError, self).__init__(self.msg)
 
 
@@ -301,9 +299,7 @@ def _setup_argparser(prog):
     default_compact = False
     default_debug = False
 
-    argp = argparse.ArgumentParser(
-        add_help=True, description="Parse/indent/pretty-print JSON data."
-    )
+    argp = argparse.ArgumentParser(add_help=True, description="Parse/indent/pretty-print JSON data.")
     argp.add_argument(
         "input_filenames",
         nargs="*",
@@ -321,10 +317,7 @@ def _setup_argparser(prog):
         dest="output_filename",
         default=None,
         metavar="OUTPUTFILE",
-        help=(
-            "output file, or '-' for stdout (default: stdout); "
-            "conflicts with '--inplace'"
-        ),
+        help=("output file, or '-' for stdout (default: stdout); " "conflicts with '--inplace'"),
     )
     file_group.add_argument(
         "-I",
@@ -332,9 +325,7 @@ def _setup_argparser(prog):
         "--in-place",
         action="store_true",
         default=default_inplace,
-        help="write changes to input file in place (default: {})".format(
-            default_inplace
-        ),
+        help="write changes to input file in place (default: {})".format(default_inplace),
     )
     file_group.add_argument(
         "--pre-commit",
@@ -404,18 +395,14 @@ def _setup_argparser(prog):
         "--compact",
         action="store_true",
         default=default_compact,
-        help="compact JSON onto one line with minimal whitespace (default: {})".format(
-            default_compact
-        ),
+        help="compact JSON onto one line with minimal whitespace (default: {})".format(default_compact),
     )
     json_group.add_argument(
         "-n",
         "--indent",
         action="store",
         default=default_indent,
-        help="number of spaces or string for indenting (default: {})".format(
-            default_indent
-        ),
+        help="number of spaces or string for indenting (default: {})".format(default_indent),
     )
     json_group.add_argument(
         "-s",
@@ -469,25 +456,18 @@ def _check_input_and_output_filenames(cli_args):
         if cli_args.output_filename is None:
             cli_args.output_filename = "-"  # default to stdout
         if len(cli_args.input_filenames) > 1:
-            raise RuntimeError(
-                "to process more than one input file at a time, use '--inplace'"
-            )
+            raise RuntimeError("to process more than one input file at a time, use '--inplace'")
         output_filename = _normalize_path(cli_args.output_filename)
         input_filename = _normalize_path(cli_args.input_filenames[0])
         if input_filename != "-" and input_filename == output_filename:
-            raise RuntimeError(
-                "input file and output file are the same; "
-                "use '--inplace' to modify files in place"
-            )
+            raise RuntimeError("input file and output file are the same; " "use '--inplace' to modify files in place")
     else:
         if cli_args.output_filename is not None:
             raise RuntimeError("output files do not make sense with '--inplace'")
 
         for input_filename in cli_args.input_filenames:
             if input_filename == "-":
-                raise RuntimeError(
-                    "reading from stdin does not make sense with '--inplace'"
-                )
+                raise RuntimeError("reading from stdin does not make sense with '--inplace'")
 
 
 def _check_completion_args(cli_args):
@@ -598,9 +578,7 @@ def cli(*program_args):
         input_iofile.open_for_input()
 
         try:
-            (data, input_text) = load_json(
-                input_iofile.file, with_text=True, **load_kwargs
-            )
+            (data, input_text) = load_json(input_iofile.file, with_text=True, **load_kwargs)
         except ValueError as e:
             if not cli_args.inplace:
                 raise SystemExit(e)
@@ -626,9 +604,7 @@ def cli(*program_args):
                         file=sys.stderr,
                     )
                     if cli_args.show_diff:
-                        for line in _compute_diff(
-                            output_iofile.file.name, input_text, output_text
-                        ):
+                        for line in _compute_diff(output_iofile.file.name, input_text, output_text):
                             print(line)
                 output_iofile.close()
 
