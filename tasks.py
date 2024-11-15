@@ -102,21 +102,19 @@ def tests(
     context, test_name_pattern, quiet=False, failfast=False, catch=False, buffer=False
 ):
     """Run tests using `python3 -m unittest discover`"""
-    unittest_args = []
-    unittest_args.append("-q" if quiet else "-v")
+    args = []
+    args.append("-q" if quiet else "-v")
     if failfast:
-        unittest_args.append("--failfast")
+        args.append("--failfast")
     if catch:
-        unittest_args.append("--catch")
+        args.append("--catch")
     if buffer:
-        unittest_args.append("--buffer")
+        args.append("--buffer")
     if test_name_pattern:
-        unittest_args.append("-k")
-        unittest_args.extend(test_name_pattern)
+        args.append("-k")
+        args.extend(test_name_pattern)
     context.run(
-        "uv run python3 -m unittest discover -s tests -t . {}".format(
-            " ".join(unittest_args)
-        )
+        "uv run python3 -m unittest discover -s tests -t . {}".format(" ".join(args))
     )
 
 
