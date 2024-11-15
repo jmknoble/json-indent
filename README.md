@@ -144,7 +144,7 @@ your project's [.pre-commit-config.yaml](examples/pre-commit-config.yaml):
 
 ```yaml
   - repo: https://github.com/jmknoble/json-indent
-    rev: v2.7.3
+    rev: v2.7.4
     hooks:
       - id: json-indent
 ```
