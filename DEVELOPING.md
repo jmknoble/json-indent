@@ -58,9 +58,8 @@ Make sure you can run `uv` when you're done:
 >
 > If this is the first time you've installed `uv`, you may need to start a new shell or terminal
 > window, or log out and log back in again, to be able to access it.  If you prefer to be in
-> control, you can add the following directories to your `PATH`:
+> control, you can add the following directory to your `PATH`:
 >
-> - `~/.cargo/bin` (or `$HOME/.cargo/bin`)
 > - `~/.local/bin` (or `$HOME/.local/bin`)
 
 - - -
@@ -147,9 +146,9 @@ See [Invoke's documentation][invoke-doc] for further info.
 We use [ruff][ruff-doc] to do both linting and auto-formatting of Python source code.
 There are pre-commit-hooks to do that, or you can run `invoke` tasks whenever you want:
 
-    uv run invoke isort-python 
+    uv run invoke isort-python
     uv run invoke check-python
-    uv run invoke format-python 
+    uv run invoke format-python
 
 Ruff's linter (`ruff check`) can auto-apply "safe" fixes, if you ask it to:
 
