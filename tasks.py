@@ -115,7 +115,17 @@ def tests(context, test_name_pattern, quiet=False, failfast=False, catch=False, 
 
 
 @task
-def version(context, bump=False, dry_run=True, go=False, patch=False, minor=False, major=False):
+def version(
+    context,
+    bump=False,
+    dry_run=True,
+    go=False,
+    release_tag=None,
+    release_num=False,
+    patch=False,
+    minor=False,
+    major=False,
+):
     """Show or update this project's current version"""
     args = []
     if not bump:
@@ -132,4 +142,13 @@ def version(context, bump=False, dry_run=True, go=False, patch=False, minor=Fals
             args.append("--minor")
         if patch:
             args.append("--patch")
+        if release_tag is not None:
+            if release_tag not in {"alpha", "beta", "rc", "final"}:
+                raise ValueError(
+                    "Only pre-releases or final releases are supported via this task; "
+                    "run bumpver directly if you need more control"
+                )
+            args.append(f"--tag {release_tag}")
+        if release_num:
+            args.append("--tag-num")
     context.run("uv run bumpver {}".format(" ".join(args)))
