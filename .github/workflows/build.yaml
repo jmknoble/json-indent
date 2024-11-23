@@ -32,7 +32,7 @@ jobs:
         run: uv sync
 
       - name: Run checks
-        run: "uv run invoke checks 2>&1"
+        run: uv run invoke checks
 
   build:
     name: Build Packages
@@ -54,10 +54,10 @@ jobs:
         run: uv sync
 
       - name: Build Python packages
-        run: "uv run invoke clean build 2>&1"
+        run: uv run invoke clean build
 
       - name: Run unit tests
-        run: "uv run invoke tests 2>&1"
+        run: uv run invoke tests
 
       - name: Store artifacts
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}  # only for version tags
