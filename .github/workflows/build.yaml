@@ -32,7 +32,7 @@ jobs:
         run: uv sync
 
       - name: Run checks
-        run: uv run invoke -p checks
+        run: uv run invoke checks
 
   build:
     name: Build Packages

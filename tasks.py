@@ -64,7 +64,9 @@ def no_echo(decorated_task):
     return wrapper_func
 
 
-def progress(message, use_color=True):
+def progress(message, quiet=False, use_color=True):
+    if quiet:
+        return
     message = " ".join(["==>", message, "..."])
     if use_color:
         print(colorize(message, attr="bold", fg="green"))
