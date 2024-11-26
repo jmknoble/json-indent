@@ -1,8 +1,26 @@
 # https://www.pyinvoke.org/
+
+from functools import wraps
+
 from invoke import call, task
+
+ECHO_FORMAT = "\033[1;37m+ {command}\033[0m"
+
+
+# Workaround for https://github.com/adrienverge/yamllint/issues/700
+def config(decorated_task):
+    """Decorator to inject config into task context"""
+
+    @wraps(decorated_task)
+    def wrapper_func(context, *args, **kwargs):
+        context.config["run"]["echo_format"] = ECHO_FORMAT
+        return decorated_task(context, *args, **kwargs)
+
+    return wrapper_func
 
 
 @task
+@config
 def git_repo_root(context, default=None):
     """Get the root of the current Git repo"""
     git_command = ["git rev-parse --show-toplevel"]
@@ -13,24 +31,28 @@ def git_repo_root(context, default=None):
 
 
 @task
+@config
 def install_json_indent(context):
     """Install json-indent tool with uv"""
     context.run("uv tool install json-indent")
 
 
 @task
+@config
 def install_mark_toc(context):
     """Install mark-toc tool with uv"""
     context.run("uv tool install 'mark-toc>=0.5.0'")
 
 
 @task
+@config
 def install_yamllint(context):
     """Install yamllint tool with uv"""
     context.run("uv tool install yamllint")
 
 
 @task(pre=[install_yamllint])
+@config
 def yamllint(context):
     """Run yamllint"""
     with context.cd(git_repo_root(context)):
@@ -38,6 +60,7 @@ def yamllint(context):
 
 
 @task
+@config
 def isort_python(context, fix=True):
     """Sort imports in Python source files"""
     fix_flag = "--fix" if fix else ""
@@ -45,6 +68,7 @@ def isort_python(context, fix=True):
 
 
 @task
+@config
 def check_python(context, fix=False):
     """Run lint checks on Python source files"""
     fix_flag = "--fix" if fix else ""
@@ -52,6 +76,7 @@ def check_python(context, fix=False):
 
 
 @task
+@config
 def format_python(context, fix=True):
     """Automatically format Python source files"""
     diff_flag = "" if fix else "--diff"
@@ -59,6 +84,7 @@ def format_python(context, fix=True):
 
 
 @task(iterable=["patterns"])
+@config
 def find_files_and_run(context, command, patterns, cd=None):
     """Run a command on each file found matching one or more patterns"""
     full_patterns = [x.replace("'", r"'\''") for x in patterns]
@@ -75,6 +101,7 @@ xargs -0 -I '{{}}' -t {command}
 
 
 @task(pre=[install_json_indent])
+@config
 def format_json(context):
     """Parse and format JSON files"""
     command = "uvx json-indent --newlines=linux --pre-commit --diff '{}'"
@@ -83,6 +110,7 @@ def format_json(context):
 
 
 @task(pre=[install_mark_toc])
+@config
 def mark_toc(context):
     """Generate tables of contents for Markdown documents"""
     command = "uvx mark-toc --heading-level 2 --skip-level 1 --max-level 3 --pre-commit '{}'"
@@ -99,24 +127,28 @@ def mark_toc(context):
         call(format_python, fix=False),
     ]
 )
+@config
 def lint(context):
     """Run all lint checks"""
     pass
 
 
 @task(pre=[lint, mark_toc])
+@config
 def checks(context):
     """Run all checks"""
     pass
 
 
 @task
+@config
 def clean_docs(context):
     """Clean up detritus from building documentation"""
     context.run("rm -r -f docs/build docs/sphinx")
 
 
 @task(pre=[clean_docs])
+@config
 def clean(context):
     """Clean up build and runtime detritus"""
     context.run("rm -r -f build dist")
@@ -126,12 +158,14 @@ def clean(context):
 
 
 @task
+@config
 def build(context, clean=False):
     """Build Python source and wheel distributions"""
     context.run("uv build --no-cache")
 
 
 @task(iterable=["test_name_pattern"])
+@config
 def tests(context, test_name_pattern, quiet=False, failfast=False, catch=False, buffer=False):
     """Run tests using `python3 -m unittest discover`"""
     args = []
@@ -149,6 +183,7 @@ def tests(context, test_name_pattern, quiet=False, failfast=False, catch=False, 
 
 
 @task
+@config
 def version(
     context,
     bump=False,
