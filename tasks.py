@@ -299,4 +299,11 @@ def version(
             args.append(f"--tag {release_tag}")
         if release_num:
             args.append("--tag-num")
+    if not bump:
+        action = "Getting"
+    elif dry_run:
+        action = "Would bump"
+    else:
+        action = "Bumping"
+    progress(f"{action} version")
     context.run("uv run bumpver {}".format(" ".join(args)))
