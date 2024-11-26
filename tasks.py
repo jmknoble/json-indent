@@ -65,9 +65,12 @@ def no_echo(decorated_task):
     return wrapper_func
 
 
-def progress(message):
+def progress(message, color=False):
     message = " ".join(["==>", message, "..."])
-    print(color(message, attr="bold", fg="green"))
+    if color:
+        print(color(message, attr="bold", fg="green"))
+    else:
+        print(message)
 
 
 def install_tool(context, tool, constraint=None):
