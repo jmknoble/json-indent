@@ -4,7 +4,7 @@ from functools import wraps
 
 from invoke import call, task
 
-ECHO_FORMAT = "\033[1;37m+ {command}\033[0m"
+ECHO_FORMAT = "\033[1;34m+ {command}\033[0m"
 
 
 # Workaround for https://github.com/adrienverge/yamllint/issues/700
