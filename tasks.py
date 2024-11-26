@@ -23,20 +23,19 @@ COLOR_FOREGROUNDS = {
 # fmt: on
 
 
-def color(text, attr=None, fg=None):
+def colorize(text, attr=None, fg=None):
     if attr is None and fg is None:
         return text
-    if attr is None:
-        attr = "normal"
-    attr = COLOR_ATTRIBUTES[attr]
-    fg = COLOR_FOREGROUNDS[fg]
+    esc = "\033"
+    attr = str(COLOR_ATTRIBUTES[attr]) + ";" if attr else ""
+    fg = str(COLOR_FOREGROUNDS[fg]) if fg else ""
     reset = COLOR_ATTRIBUTES["normal"]
-    prefix = f"\033[{attr};{fg}m"
-    suffix = f"\033[{reset}m"
+    prefix = f"{esc}[{attr}{fg}m"
+    suffix = f"{esc}[{reset}m"
     return "".join([prefix, text, suffix])
 
 
-ECHO_FORMAT = color("+ {command}", attr="bold", fg="blue")
+ECHO_FORMAT = colorize("+ {command}", fg="blue")
 
 
 # Workaround for https://github.com/adrienverge/yamllint/issues/700
@@ -65,10 +64,10 @@ def no_echo(decorated_task):
     return wrapper_func
 
 
-def progress(message, color=False):
+def progress(message, use_color=True):
     message = " ".join(["==>", message, "..."])
-    if color:
-        print(color(message, attr="bold", fg="green"))
+    if use_color:
+        print(colorize(message, attr="bold", fg="green"))
     else:
         print(message)
 

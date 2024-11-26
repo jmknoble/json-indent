@@ -3,4 +3,4 @@ tasks:
   auto_dash_names: true
 
 run:
-  echo: false
+  echo: true
