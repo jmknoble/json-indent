@@ -91,9 +91,7 @@ class TestIOFile(unittest.TestCase):
             x.close()
             self.assertIs(x.mode, None)
             self.assertIs(x.file, None)
-            self.assertTrue(
-                openfile.closed if should_be_closed else not openfile.closed
-            )
+            self.assertTrue(openfile.closed if should_be_closed else not openfile.closed)
 
     def test_IOF_130_open_for_purpose(self):
         x = iof.IOFile(self.testfile.name)

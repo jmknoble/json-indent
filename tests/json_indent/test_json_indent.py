@@ -29,9 +29,7 @@ DUMMY_JSON_DATA_ORDERED_DICT[DUMMY_KEY_1] = [DUMMY_VALUE_1]
 DUMMY_JSON_TEXT_UNFORMATTED = """{{
 "{key2}": "{value2}", "{key1}": ["{value1}"]
 }}
-""".format(
-    key1=DUMMY_KEY_1, key2=DUMMY_KEY_2, value1=DUMMY_VALUE_1, value2=DUMMY_VALUE_2
-)
+""".format(key1=DUMMY_KEY_1, key2=DUMMY_KEY_2, value1=DUMMY_VALUE_1, value2=DUMMY_VALUE_2)
 
 DUMMY_JSON_TEXT_FORMATTED = """{{
     "{key2}": "{value2}",
@@ -39,9 +37,7 @@ DUMMY_JSON_TEXT_FORMATTED = """{{
         "{value1}"
     ]
 }}
-""".format(
-    key1=DUMMY_KEY_1, key2=DUMMY_KEY_2, value1=DUMMY_VALUE_1, value2=DUMMY_VALUE_2
-)
+""".format(key1=DUMMY_KEY_1, key2=DUMMY_KEY_2, value1=DUMMY_VALUE_1, value2=DUMMY_VALUE_2)
 
 DUMMY_JSON_TEXT_SORTED = """{{
     "{key1}": [
@@ -49,9 +45,7 @@ DUMMY_JSON_TEXT_SORTED = """{{
     ],
     "{key2}": "{value2}"
 }}
-""".format(
-    key1=DUMMY_KEY_1, key2=DUMMY_KEY_2, value1=DUMMY_VALUE_1, value2=DUMMY_VALUE_2
-)
+""".format(key1=DUMMY_KEY_1, key2=DUMMY_KEY_2, value1=DUMMY_VALUE_1, value2=DUMMY_VALUE_2)
 
 DUMMY_JSON_TEXT_COMPACT = '{{"{key2}":"{value2}","{key1}":["{value1}"]}}\n'.format(
     key1=DUMMY_KEY_1, key2=DUMMY_KEY_2, value1=DUMMY_VALUE_1, value2=DUMMY_VALUE_2
@@ -104,11 +98,7 @@ DUMMY_PATH_1 = "DummyPath1"
 DUMMY_PATH_2 = "DummyPath2"
 DUMMY_PATHS = {DUMMY_PATH_1: None, "one/two/three": None, "/a/b/c": None, "-": None}
 for path in DUMMY_PATHS:
-    normalized_path = (
-        "-"
-        if path == "-"
-        else os.path.normcase(os.path.normpath(os.path.realpath(path)))
-    )
+    normalized_path = "-" if path == "-" else os.path.normcase(os.path.normpath(os.path.realpath(path)))
     DUMMY_PATHS[path] = normalized_path
 
 ARGS_DEFAULT = []
@@ -248,9 +238,7 @@ class TestJsonIndent(unittest.TestCase):
 
         with open(self.infile.name, "r") as f:
             json_data = ji.load_json(f)
-            self.assertDictishEqual(
-                json_data, DUMMY_JSON_DATA_ORDERED_DICT, ordered=True
-            )
+            self.assertDictishEqual(json_data, DUMMY_JSON_DATA_ORDERED_DICT, ordered=True)
 
         for ordered, expected_data in [
             (True, DUMMY_JSON_DATA_ORDERED_DICT),
@@ -269,9 +257,7 @@ class TestJsonIndent(unittest.TestCase):
 
         with open(self.infile.name, "r") as f:
             (json_data, json_text) = ji.load_json(f, with_text=True)
-            self.assertDictishEqual(
-                json_data, DUMMY_JSON_DATA_ORDERED_DICT, ordered=True
-            )
+            self.assertDictishEqual(json_data, DUMMY_JSON_DATA_ORDERED_DICT, ordered=True)
             self.assertEqual(json_text, DUMMY_JSON_TEXT_UNFORMATTED)
 
         for ordered, expected_data in [
@@ -279,15 +265,11 @@ class TestJsonIndent(unittest.TestCase):
             (False, DUMMY_JSON_DATA_DICT),
         ]:
             with open(self.infile.name, "r") as f:
-                (json_data, json_text) = ji.load_json(
-                    f, with_text=True, unordered=not ordered
-                )
+                (json_data, json_text) = ji.load_json(f, with_text=True, unordered=not ordered)
                 self.assertDictishEqual(json_data, expected_data, ordered=ordered)
                 self.assertEqual(json_text, DUMMY_JSON_TEXT_UNFORMATTED)
             with open(self.infile.name, "r") as f:
-                (json_data, json_text) = ji.load_json(
-                    f, with_text=True, sort_keys=not ordered
-                )
+                (json_data, json_text) = ji.load_json(f, with_text=True, sort_keys=not ordered)
                 self.assertDictishEqual(json_data, expected_data, ordered=ordered)
                 self.assertEqual(json_text, DUMMY_JSON_TEXT_UNFORMATTED)
 
@@ -297,9 +279,7 @@ class TestJsonIndent(unittest.TestCase):
 
         with open(self.infile.name, "r") as f:
             (json_data, json_text) = ji.load_json_file(f)
-            self.assertDictishEqual(
-                json_data, DUMMY_JSON_DATA_ORDERED_DICT, ordered=True
-            )
+            self.assertDictishEqual(json_data, DUMMY_JSON_DATA_ORDERED_DICT, ordered=True)
             self.assertEqual(json_text, DUMMY_JSON_TEXT_UNFORMATTED)
 
         for ordered, expected_data in [
@@ -365,9 +345,7 @@ class TestJsonIndent(unittest.TestCase):
                     with open(self.outfile.name, "w") as f:
                         ji.dump_json(json_data, f, **kwargs)
                 errmsg = context.exception.args[0]
-                self.assertEqual(
-                    errmsg, "can't multiply sequence by non-int of type 'str'"
-                )
+                self.assertEqual(errmsg, "can't multiply sequence by non-int of type 'str'")
             else:
                 with open(self.outfile.name, "w") as f:
                     text = ji.dump_json(json_data, f, **kwargs)
@@ -380,9 +358,7 @@ class TestJsonIndent(unittest.TestCase):
                     with open(self.outfile.name, "w") as f:
                         ji.dump_json(json_data, outfile=f, **kwargs)
                 errmsg = context.exception.args[0]
-                self.assertEqual(
-                    errmsg, "can't multiply sequence by non-int of type 'str'"
-                )
+                self.assertEqual(errmsg, "can't multiply sequence by non-int of type 'str'")
             else:
                 with open(self.outfile.name, "w") as f:
                     text = ji.dump_json(json_data, outfile=f, **kwargs)
@@ -410,9 +386,7 @@ class TestJsonIndent(unittest.TestCase):
                 with self.assertRaises(TypeError) as context:  # noqa: F841
                     ji.dump_json(json_data, **kwargs)
                 errmsg = context.exception.args[0]
-                self.assertEqual(
-                    errmsg, "can't multiply sequence by non-int of type 'str'"
-                )
+                self.assertEqual(errmsg, "can't multiply sequence by non-int of type 'str'")
             else:
                 text = ji.dump_json(json_data, **kwargs)
                 self.assertEqual(text, expected_json_text)
@@ -421,9 +395,7 @@ class TestJsonIndent(unittest.TestCase):
                 with self.assertRaises(TypeError) as context:  # noqa: F841
                     ji.dump_json(json_data, outfile=None, **kwargs)
                 errmsg = context.exception.args[0]
-                self.assertEqual(
-                    errmsg, "can't multiply sequence by non-int of type 'str'"
-                )
+                self.assertEqual(errmsg, "can't multiply sequence by non-int of type 'str'")
             else:
                 text = ji.dump_json(json_data, outfile=None, **kwargs)
                 self.assertEqual(text, expected_json_text)
@@ -457,9 +429,7 @@ class TestJsonIndent(unittest.TestCase):
                     with open(self.outfile.name, "w") as f:
                         ji.dump_json_file(json_data, f, **kwargs)
                 errmsg = context.exception.args[0]
-                self.assertEqual(
-                    errmsg, "can't multiply sequence by non-int of type 'str'"
-                )
+                self.assertEqual(errmsg, "can't multiply sequence by non-int of type 'str'")
             else:
                 with open(self.outfile.name, "w") as f:
                     text = ji.dump_json_file(json_data, f, **kwargs)
@@ -484,9 +454,7 @@ class TestJsonIndent(unittest.TestCase):
                 with self.assertRaises(TypeError) as context:  # noqa: F841
                     ji.dump_json_text(json_data, **kwargs)
                 errmsg = context.exception.args[0]
-                self.assertEqual(
-                    errmsg, "can't multiply sequence by non-int of type 'str'"
-                )
+                self.assertEqual(errmsg, "can't multiply sequence by non-int of type 'str'")
             else:
                 text = ji.dump_json_text(json_data, **kwargs)
                 self.assertEqual(text, expected_json_text)
@@ -505,18 +473,12 @@ class TestJsonIndent(unittest.TestCase):
         self.assertGreater(len(argparser.description), 0)
         for action in argparser._actions:
             self.assertTrue(
-                action.dest in CLI_OPTIONS
-                or action.dest in CLI_MULTI_OPTIONS
-                or action.dest in CLI_ARGUMENTS
+                action.dest in CLI_OPTIONS or action.dest in CLI_MULTI_OPTIONS or action.dest in CLI_ARGUMENTS
             )
             if action.dest in CLI_OPTIONS:
-                self.assertSetEqual(
-                    set(action.option_strings), set(CLI_OPTIONS[action.dest])
-                )
+                self.assertSetEqual(set(action.option_strings), set(CLI_OPTIONS[action.dest]))
             elif action.dest in CLI_MULTI_OPTIONS:
-                self.assertIn(
-                    set(action.option_strings), CLI_MULTI_OPTIONS[action.dest]
-                )
+                self.assertIn(set(action.option_strings), CLI_MULTI_OPTIONS[action.dest])
             else:
                 self.assertEqual(action.nargs, CLI_ARGUMENTS[action.dest])
 
@@ -552,9 +514,7 @@ class TestJsonIndent(unittest.TestCase):
         with self.assertRaises(RuntimeError) as context:  # noqa: F841
             ji._check_input_and_output_filenames(cli_args)
         errmsg = context.exception.args[0]
-        self.assertEqual(
-            errmsg, "to process more than one input file at a time, use '--inplace'"
-        )
+        self.assertEqual(errmsg, "to process more than one input file at a time, use '--inplace'")
 
     def test_JSI_234_check_io_filenames_with_same_filenames(self):
         cli_args = self.dummy_cli_args()
@@ -595,9 +555,7 @@ class TestJsonIndent(unittest.TestCase):
         with self.assertRaises(RuntimeError) as context:  # noqa: F841
             ji._check_input_and_output_filenames(cli_args)
         errmsg = context.exception.args[0]
-        self.assertEqual(
-            errmsg, "reading from stdin does not make sense with '--inplace'"
-        )
+        self.assertEqual(errmsg, "reading from stdin does not make sense with '--inplace'")
 
     def test_JSI_300_cli(self):
         for test_args, expected_json_text in [
@@ -607,11 +565,7 @@ class TestJsonIndent(unittest.TestCase):
         ]:
             with open(self.infile.name, "w") as f:
                 f.write(DUMMY_JSON_TEXT_UNFORMATTED)
-            args = (
-                test_args
-                + ARGS_DEBUG
-                + ["--output", self.outfile.name, self.infile.name]
-            )
+            args = test_args + ARGS_DEBUG + ["--output", self.outfile.name, self.infile.name]
             ji.cli(*args)
             with open(self.outfile.name, "r") as f:
                 self.assertEqual(f.read(), expected_json_text)
@@ -622,18 +576,12 @@ class TestJsonIndent(unittest.TestCase):
         ]:
             with open(self.infile.name, "w") as f:
                 f.write(DUMMY_JSON_TEXT_UNFORMATTED)
-            args = (
-                test_args
-                + ARGS_DEBUG
-                + ["--output", self.outfile.name, self.infile.name]
-            )
+            args = test_args + ARGS_DEBUG + ["--output", self.outfile.name, self.infile.name]
             if pv.python_version_is_less_than(3, 2):
                 with self.assertRaises(TypeError) as context:  # noqa: F841
                     ji.cli(*args)
                 errmsg = context.exception.args[0]
-                self.assertEqual(
-                    errmsg, "can't multiply sequence by non-int of type 'str'"
-                )
+                self.assertEqual(errmsg, "can't multiply sequence by non-int of type 'str'")
             else:
                 ji.cli(*args)
                 with open(self.outfile.name, "r") as f:
@@ -663,9 +611,7 @@ class TestJsonIndent(unittest.TestCase):
                 with self.assertRaises(TypeError) as context:  # noqa: F841
                     ji.cli(*args)
                 errmsg = context.exception.args[0]
-                self.assertEqual(
-                    errmsg, "can't multiply sequence by non-int of type 'str'"
-                )
+                self.assertEqual(errmsg, "can't multiply sequence by non-int of type 'str'")
             else:
                 ji.cli(*args)
                 with open(self.infile.name, "r") as f:
@@ -680,12 +626,7 @@ class TestJsonIndent(unittest.TestCase):
             for test_args in arg_set:
                 with open(self.infile.name, "w") as f:
                     f.write(DUMMY_JSON_TEXT_UNFORMATTED)
-                args = (
-                    test_args
-                    + ARGS_PLAIN
-                    + ARGS_DEBUG
-                    + ["--output", self.outfile.name, self.infile.name]
-                )
+                args = test_args + ARGS_PLAIN + ARGS_DEBUG + ["--output", self.outfile.name, self.infile.name]
                 ji.cli(*args)
                 with io.open(self.outfile.name, "rt", newline="") as f:
                     self.assertEqual(f.read(), expected_json_text)

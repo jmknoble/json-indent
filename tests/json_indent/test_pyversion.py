@@ -175,9 +175,7 @@ class TestJsonIndentPyVersion(unittest.TestCase):
 
             result = pv.python_version_is_greater_or_equal(major, minor, micro)
             self.assertEqual(result, expected)
-            result = pv.python_version_is_greater_or_equal(
-                major, minor=minor, micro=micro
-            )
+            result = pv.python_version_is_greater_or_equal(major, minor=minor, micro=micro)
             self.assertEqual(result, expected)
 
     def test_JPV_210_python_version_is_at_most(self):
