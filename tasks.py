@@ -2,7 +2,7 @@
 
 from invoke import Collection, call, task
 
-from taskutil import echo_off, echo_on, extend_config, progress
+from taskutil import colorize, echo_off, echo_on, progress
 
 ############################################################
 # Utility functions
@@ -45,28 +45,24 @@ xargs -0 -I '{{}}' -t {command}
 
 
 @task
-@extend_config
 def install_json_indent(context):
     """Install json-indent tool with uv"""
     install_tool(context, "json-indent")
 
 
 @task
-@extend_config
 def install_mark_toc(context):
     """Install mark-toc tool with uv"""
     install_tool(context, "mark-toc", constraint=">=0.5.0")
 
 
 @task
-@extend_config
 def install_yamllint(context):
     """Install yamllint tool with uv"""
     install_tool(context, "yamllint")
 
 
 @task
-@extend_config
 def python_isort(context, fix=True):
     """Sort imports in Python source files using ruff"""
     fix_flag = "--fix" if fix else ""
@@ -75,7 +71,6 @@ def python_isort(context, fix=True):
 
 
 @task
-@extend_config
 def python_lint(context, fix=False):
     """Lint Python source files using ruff"""
     fix_flag = "--fix" if fix else ""
@@ -84,7 +79,6 @@ def python_lint(context, fix=False):
 
 
 @task
-@extend_config
 def python_format(context, fix=True):
     """Format Python source files using ruff"""
     diff_flag = "" if fix else "--diff"
@@ -97,7 +91,6 @@ def python_format(context, fix=True):
 
 
 @task(pre=[install_json_indent])
-@extend_config
 def json_indent(context):
     """Parse and format JSON files using json-indent"""
     command = "uvx json-indent --newlines=linux --pre-commit --diff '{}'"
@@ -107,7 +100,6 @@ def json_indent(context):
 
 
 @task(pre=[install_mark_toc])
-@extend_config
 def mark_toc(context):
     """Generate tables-of-contents for Markdown documents using mark-toc"""
     command = "uvx mark-toc --heading-level 2 --skip-level 1 --max-level 3 --pre-commit '{}'"
@@ -117,7 +109,6 @@ def mark_toc(context):
 
 
 @task(pre=[install_yamllint])
-@extend_config
 def yamllint(context):
     """Lint YAML files using yamllint"""
     progress(yamllint)
@@ -134,21 +125,18 @@ def yamllint(context):
         call(python_format, fix=False),
     ]
 )
-@extend_config
 def lint(context):
     """Run all lint checks"""
     pass
 
 
 @task(pre=[lint, mark_toc])
-@extend_config
 def checks(context):
     """Run all checks"""
     pass
 
 
 @task
-@extend_config
 def clean_docs(context):
     """Clean up documentation detritus"""
     progress(clean_docs)
@@ -156,7 +144,6 @@ def clean_docs(context):
 
 
 @task(pre=[clean_docs])
-@extend_config
 def clean(context):
     """Clean up build and runtime detritus"""
     progress(clean)
@@ -167,7 +154,6 @@ def clean(context):
 
 
 @task
-@extend_config
 def build(context, clean=False):
     """Build Python source and wheel distributions"""
     progress(build)
@@ -175,7 +161,6 @@ def build(context, clean=False):
 
 
 @task(iterable=["test_name_pattern"])
-@extend_config
 def tests(context, test_name_pattern, quiet=False, failfast=False, catch=False, buffer=False):
     """Run tests using `unittest discover`"""
     args = []
@@ -194,7 +179,6 @@ def tests(context, test_name_pattern, quiet=False, failfast=False, catch=False, 
 
 
 @task
-@extend_config
 @echo_on
 def version(
     context,
@@ -266,6 +250,14 @@ python_ns.add_task(python_format, name="format")
 
 # Top-level tasks
 ns = Collection()  # MAGIC! Must be named `namespace` or `ns`
+config_options = {
+    "run": {
+        # Default echo format is hard to distinguish in GitHub Actions output
+        "echo_format": colorize("+ {command}", fg="blue"),
+    },
+}
+ns.configure(config_options)
+
 ns.add_collection(check_ns)
 ns.add_collection(python_ns)
 
