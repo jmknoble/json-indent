@@ -9,6 +9,10 @@ on:  # yamllint disable-line rule:truthy
     tags:
       - "*"
 
+env:
+  WITH_PYTHON_VERSION: "3.x"
+  WITH_UV_VERSION: "0.5.7"
+
 jobs:
   check:
     name: Check Source Code
@@ -20,10 +24,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "${{ env.WITH_PYTHON_VERSION }}"
 
       - name: Install uv
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "${{ env.WITH_UV_VERSION }}"
 
       - name: Show uv version
         run: uv --version
@@ -45,10 +51,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "${{ env.WITH_PYTHON_VERSION }}"
 
       - name: Install uv
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "${{ env.WITH_UV_VERSION }}"
 
       - name: Synchronize virtual environment
         run: uv sync
